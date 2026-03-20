@@ -5,110 +5,6 @@ $attempt_id = $_GET['attempt_id'] ?? 0;
 <?php include("includes/header.php"); ?>
 <?php include("includes/sidebar.php"); ?>
 
-<style>
-
-
-
-.result-summary{
-border:1px solid #e6e9ef;
-border-radius:8px;
-padding:15px;
-background:#fff;
-}
-
-.summary-row{
-display:flex;
-justify-content:space-between;
-text-align:center;
-flex-wrap:wrap;
-}
-
-.summary-box{
-flex:1;
-min-width:120px;
-}
-
-.summary-title{
-font-size:16px;
-color: #343a40;
-}
-
-.summary-value{
-font-size:20px;
-font-weight:600;
-color:#7460ee;
-}
-
-
-.progress{
-height:10px;
-border-radius:10px;
-}
-
-
-
-#questionPalette{
-display:flex;
-flex-wrap:wrap;
-gap:6px;
-}
-
-.palette-btn{
-width:32px;
-height:32px;
-border-radius:5px;
-font-size:13px;
-cursor:pointer;
-}
-
-
-.palette-correct{ 
-background:#28b779; 
-color:#fff; 
-
-}
-.palette-wrong{ 
-background:#da542e; 
-color:#fff; 
-}
-.palette-notanswered{ 
-background:#fff; 
-border:1px solid #ccc; 
-color:#000; 
-}
-
-.palette-btn.active{
-border:2px solid #0d6efd;
-}
-
-.accordion-button{
-padding:8px;
-font-size:14px;
-}
-
-.accordion-body{
-padding:10px;
-font-size:13px;
-}
-
-.option-default{
-border:1px solid #ddd;
-padding:8px;
-border-radius:5px;
-margin-bottom:6px;
-}
-
-.option-correct{
-background:#e9f8f1;
-border:1px solid #28b779;
-}
-
-.option-wrong{
-background:#fdecea;
-border:1px solid #da542e;
-}
-
-</style>
 
 <div class="page-wrapper">
 
@@ -233,8 +129,6 @@ if(res.status!="success"){
     return;
 }
 
-
-
 let s = res.summary;
 
 let total = parseInt(s.total_questions);
@@ -244,6 +138,8 @@ let skipped = total - correct - wrong;
 
 let percent = total > 0 ? ((correct/total)*100).toFixed(2) : 0;
 
+/* ================= SUMMARY ================= */
+
 $("#scoreMarks").text(correct+" / "+total);
 $("#correctQ").text(correct);
 $("#wrongQ").text(wrong);
@@ -251,13 +147,13 @@ $("#skippedQ").text(skipped);
 $("#accuracy").text(percent+"%");
 $("#progressBar").css("width",percent+"%");
 
-
+/* ================= PALETTE ================= */
 
 let palette="";
 
 res.questions.forEach(function(q,index){
 
-let color="palette-skipped";
+let color="palette-notanswered"; // ✅ FIXED
 
 if(q.status === "correct")
     color="palette-correct";
@@ -268,7 +164,7 @@ else if(q.status === "wrong")
 palette+=`
 <button class="palette-btn ${color}" 
 onclick="scrollToQuestion(${index}, this)">
-${index+1}
+${q.question_order}
 </button>
 `;
 
@@ -277,6 +173,7 @@ ${index+1}
 $("#questionPalette").html(palette);
 
 
+/* ================= QUESTIONS ================= */
 
 let html="";
 
@@ -304,7 +201,7 @@ type="button"
 data-bs-toggle="collapse"
 data-bs-target="#collapse${index}">
 
-Q${index+1} ${statusBadge}
+Q${q.question_order} ${statusBadge}
 
 </button>
 
@@ -322,12 +219,14 @@ q.options.forEach(function(op){
 
 let className="option-default";
 
+/* ✅ FIX TYPE ISSUE */
+let isSelected = q.user_selected.includes(parseInt(op.id));
+
 if(parseInt(op.is_correct) === 1){
     className="option-default option-correct";
 }
 
-
-if(q.user_selected.includes(op.id) && parseInt(op.is_correct) === 0){
+if(isSelected && parseInt(op.is_correct) === 0){
     className="option-default option-wrong";
 }
 
@@ -337,7 +236,7 @@ html+=`
 
 ${op.option_text}
 
-${q.user_selected.includes(op.id) 
+${isSelected 
     ? '<span class="badge bg-primary ms-2">Your Answer</span>' 
     : ''}
 
@@ -361,9 +260,9 @@ $("#questionReview").html(html);
 }
 
 
+/* ================= SCROLL ================= */
 
 function scrollToQuestion(index, el){
-
 
 $(".palette-btn").removeClass("active");
 $(el).addClass("active");

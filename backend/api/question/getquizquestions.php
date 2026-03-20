@@ -1,117 +1,104 @@
 <?php
-
 header("Content-Type: application/json");
 
 require_once "../../confi/database.php";
 include "../../../userAccess.php";
 
-$quiz_id = $_GET['quiz_id'] ?? '';
+$attempt_id = $_GET['attempt_id'] ?? '';
 
-if(!$quiz_id){
-    echo json_encode([
-        "status"=>"error",
-        "message"=>"Quiz ID missing"
-    ]);
+if(!$attempt_id){
+    echo json_encode(["status"=>"error","message"=>"Attempt ID missing"]);
     exit;
 }
 
-$quizQuery = $conn->prepare("
-    SELECT title, duration, total_questions
-    FROM quizzes
-    WHERE quiz_id=?
+/* ================= GET QUIZ DETAILS ================= */
+
+$qz = $conn->prepare("
+SELECT q.title, q.duration
+FROM quizzes q
+JOIN quiz_attempts qa ON qa.quiz_id = q.quiz_id
+WHERE qa.id=?
 ");
 
-$quizQuery->bind_param("i",$quiz_id);
-$quizQuery->execute();
-$quizResult = $quizQuery->get_result()->fetch_assoc();
+$qz->bind_param("i",$attempt_id);
+$qz->execute();
 
-$quiz_name = $quizResult['title'] ?? '';
-$duration = $quizResult['duration'] ?? 0;
-$total_limit = $quizResult['total_questions'] ?? 0;
+$qz_res = $qz->get_result()->fetch_assoc();
 
-$qidQuery = $conn->prepare("
-    SELECT id 
-    FROM questions
-    WHERE quiz_id=?
-    ORDER BY RAND()
-    LIMIT ?
-");
-
-$qidQuery->bind_param("ii", $quiz_id, $total_limit);
-$qidQuery->execute();
-
-$qidResult = $qidQuery->get_result();
-
-$question_ids = [];
-
-while($row = $qidResult->fetch_assoc()){
-    $question_ids[] = $row['id'];
-}
-
-if(empty($question_ids)){
-    echo json_encode([
-        "status"=>"error",
-        "message"=>"No questions found"
-    ]);
-    exit;
-}
-
-$idList = implode(",", $question_ids);
+/* ================= GET QUESTIONS ================= */
 
 $sql = "
 SELECT 
+aq.question_order,
 q.id as question_id,
 q.question_text,
 q.question_type,
 q.marks,
-o.id as option_id,
-o.option_text
-FROM questions q
-LEFT JOIN options o ON o.question_id = q.id
-WHERE q.id IN ($idList)
+aq.options_order
+FROM attempt_questions aq
+JOIN questions q ON q.id = aq.question_id
+WHERE aq.attempt_id=?
+ORDER BY aq.question_order ASC
 ";
 
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i",$attempt_id);
+$stmt->execute();
+
+$res = $stmt->get_result();
 
 $questions = [];
 
-while($row = $result->fetch_assoc()){
+while($row = $res->fetch_assoc()){
 
     $qid = $row['question_id'];
 
-    if(!isset($questions[$qid])){
+    $option_ids = json_decode($row['options_order'], true);
+    $optList = implode(",", $option_ids);
 
-        $questions[$qid] = [
-            "id"=>$qid,
-            "question_text"=>$row['question_text'],
-            "question_type"=>$row['question_type'],
-            "marks"=>$row['marks'],
-            "options"=>[]
-        ];
+    $optQuery = $conn->query("
+    SELECT id, option_text
+    FROM options
+    WHERE id IN ($optList)
+    ORDER BY FIELD(id,$optList)
+    ");
+
+    $options = [];
+
+    while($o = $optQuery->fetch_assoc()){
+        $options[] = $o;
     }
 
-    if($row['option_id']){
-        $questions[$qid]['options'][] = [
-            "id"=>$row['option_id'],
-            "option_text"=>$row['option_text']
-        ];
+    /* LOAD SAVED ANSWERS */
+    $ansQ = $conn->prepare("
+    SELECT option_id FROM user_answers
+    WHERE attempt_id=? AND question_id=?
+    ");
+
+    $ansQ->bind_param("ii",$attempt_id,$qid);
+    $ansQ->execute();
+
+    $ansRes = $ansQ->get_result();
+
+    $saved = [];
+
+    while($a = $ansRes->fetch_assoc()){
+        $saved[] = (string)$a['option_id'];
     }
-}
 
-$questions = array_values($questions);
-
-
-
-foreach($questions as &$q){
-    shuffle($q['options']);
+    $questions[] = [
+        "id"=>$qid,
+        "question_text"=>$row['question_text'],
+        "question_type"=>$row['question_type'],
+        "marks"=>$row['marks'],
+        "options"=>$options,
+        "saved_answers"=>$saved
+    ];
 }
 
 echo json_encode([
     "status"=>"success",
-    "quiz_name"=>$quiz_name,
-    "duration"=>$duration,
-    "total_questions"=>count($questions),
+    "quiz_name"=>$qz_res['title'],
+    "duration"=>$qz_res['duration'],
     "questions"=>$questions
 ]);
-
-?>

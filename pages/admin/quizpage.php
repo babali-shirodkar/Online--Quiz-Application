@@ -1,10 +1,7 @@
-<?php
-
-$quiz_id = $_GET['quiz_id'];
-?>
 
 <?php include("includes/header.php"); ?>
 <?php include("includes/sidebar.php"); ?>
+
 
 <div class="page-wrapper">
 <div class="container-fluid">
@@ -191,33 +188,52 @@ Submit Test
 <script>
 
 let api_url = "<?php echo $api_url; ?>";
-let quiz_id = "<?php echo $quiz_id ?>";
+let attempt_id = "<?php echo $_GET['attempt_id']; ?>";
 
 let questions=[];
 let currentIndex=0;
 let answers={};
 let reviewQuestions=[];
+let timerInterval=null;
 
 $(document).ready(function(){
 loadQuestions();
 });
 
 
+/* ================= LOAD QUESTIONS ================= */
+
 function loadQuestions(){
 
-$.get(api_url+"question/getquizquestions.php?quiz_id="+quiz_id,function(res){
+$.get(api_url+"question/getquizquestions.php?attempt_id="+attempt_id,function(res){
 
 questions=res.questions;
 
-
-
+/* QUIZ TITLE */
 $("#quizTitle").text(res.quiz_name);
 
-$("#totalQ").text(questions.length);
-$("#remainingQ").text(questions.length);
+/* LOAD SAVED INDEX (RESUME) */
+let savedIndex = localStorage.getItem("quiz_current_index_"+attempt_id);
+if(savedIndex){
+    currentIndex = parseInt(savedIndex);
+}
 
+/* LOAD SAVED ANSWERS FROM API */
+questions.forEach(q=>{
+    if(q.saved_answers && q.saved_answers.length>0){
+        answers[q.id] = q.saved_answers;
+    }
+});
+
+/* COUNTS */
+$("#totalQ").text(questions.length);
+updateCount();
+
+/* CREATE UI */
 createPalette();
 loadQuestion();
+
+/* TIMER RESUME */
 startTimer(res.duration);
 
 },"json");
@@ -225,7 +241,7 @@ startTimer(res.duration);
 }
 
 
-
+/* ================= CREATE PALETTE ================= */
 
 function createPalette(){
 
@@ -233,7 +249,12 @@ let html="";
 
 questions.forEach((q,i)=>{
 
-html+=`<div class="qbox notanswered" onclick="jumpQuestion(${i})">${i+1}</div>`;
+let cls = "notanswered";
+
+if(answers[q.id]) cls = "answered";
+if(reviewQuestions.includes(q.id)) cls = "review";
+
+html+=`<div class="qbox ${cls}" onclick="jumpQuestion(${i})">${i+1}</div>`;
 
 });
 
@@ -242,9 +263,11 @@ $("#questionPalette").html(html);
 }
 
 
-
+/* ================= LOAD QUESTION ================= */
 
 function loadQuestion(){
+
+localStorage.setItem("quiz_current_index_"+attempt_id,currentIndex);
 
 let q = questions[currentIndex];
 
@@ -253,36 +276,27 @@ $("#questionMarks").text("+" + (q.marks ?? 0));
 
 let html = `<p>${q.question_text}</p>`;
 
-
-
-
+/* TRUE FALSE */
 if(q.question_type == "truefalse"){
 
-    q.options.forEach(op=>{
+q.options.forEach(op=>{
 
-        let checked = "";
+let checked="";
 
-        if(answers[q.id] && answers[q.id].includes(op.id.toString())){
-            checked = "checked";
-        }
-
-        html += `
-        <div class="option-container">
-
-            <input type="radio"
-            name="option_${q.id}"
-            value="${op.id}" ${checked}>
-
-            <div class="option-row">${op.option_text}</div>
-
-        </div>
-        `;
-    });
+if(answers[q.id] && answers[q.id].includes(op.id.toString())){
+checked="checked";
 }
 
+html += `
+<div class="option-container">
+<input type="radio" name="option_${q.id}" value="${op.id}" ${checked}>
+<div class="option-row">${op.option_text}</div>
+</div>
+`;
+});
+}
 
-
-
+/* MCQ / MULTISELECT */
 else{
 
 let inputType = (q.question_type == "multiselect") ? "checkbox" : "radio";
@@ -296,21 +310,12 @@ checked="checked";
 }
 
 html += `
-
 <div class="option-container">
-
-<input type="${inputType}"
-name="option_${q.id}"
-value="${op.id}" ${checked}>
-
+<input type="${inputType}" name="option_${q.id}" value="${op.id}" ${checked}>
 <div class="option-row">${op.option_text}</div>
-
 </div>
-
 `;
-
 });
-
 }
 
 $("#questionBox").html(html);
@@ -319,21 +324,23 @@ updatePalette();
 
 }
 
+
 $(document).on("click",".option-row",function(){
-
 $(this).prev("input").prop("checked",true).trigger("change");
-
 });
+
+
+/* ================= UPDATE PALETTE ================= */
 
 function updatePalette(){
 
 $(".qbox").removeClass("current");
-
 $(".qbox").eq(currentIndex).addClass("current");
 
 }
 
 
+/* ================= SAVE ANSWER ================= */
 
 function saveAnswer(){
 
@@ -347,6 +354,14 @@ if(selected.length>0){
 
 answers[questions[currentIndex].id]=selected;
 
+/* SAVE TO DB */
+$.post(api_url+"question/savesingleanswer.php",{
+    attempt_id:attempt_id,
+    question_id:questions[currentIndex].id,
+    options:selected
+});
+
+/* UPDATE UI */
 $(".qbox").eq(currentIndex)
 .removeClass("notanswered")
 .addClass("answered");
@@ -354,17 +369,22 @@ $(".qbox").eq(currentIndex)
 }
 
 updateCount();
-
 }
 
 
-
+/* ================= CLEAR RESPONSE ================= */
 
 $("#clearResponseBtn").click(function(){
 
 delete answers[questions[currentIndex].id];
 
 $("#questionBox input").prop("checked",false);
+
+$.post(api_url+"question/savesingleanswer.php",{
+    attempt_id:attempt_id,
+    question_id:questions[currentIndex].id,
+    options:[]
+});
 
 $(".qbox").eq(currentIndex)
 .removeClass("answered review")
@@ -375,6 +395,7 @@ updateCount();
 });
 
 
+/* ================= MARK REVIEW ================= */
 
 $("#markReviewBtn").click(function(){
 
@@ -398,6 +419,8 @@ updateCount();
 });
 
 
+/* ================= SAVE NEXT ================= */
+
 $("#saveNextBtn").click(function(){
 
 saveAnswer();
@@ -416,6 +439,8 @@ loadQuestion();
 }
 
 
+/* ================= COUNT ================= */
+
 function updateCount(){
 
 let attempted=Object.keys(answers).length;
@@ -427,36 +452,49 @@ $("#reviewQ").text(reviewQuestions.length);
 }
 
 
+/* ================= TIMER (RESUME) ================= */
 
 function startTimer(minutes){
 
-let time=minutes*60;
+let totalTime = minutes*60;
 
-let timer=setInterval(function(){
+/* GET SAVED START TIME */
+let savedStart = localStorage.getItem("quiz_start_time_"+attempt_id);
 
-let m=Math.floor(time/60);
-let s=time%60;
+if(!savedStart){
+    savedStart = Math.floor(Date.now()/1000);
+    localStorage.setItem("quiz_start_time_"+attempt_id,savedStart);
+}
+
+clearInterval(timerInterval);
+
+timerInterval = setInterval(function(){
+
+let now = Math.floor(Date.now()/1000);
+let elapsed = now - savedStart;
+
+let remaining = totalTime - elapsed;
+
+if(remaining <= 0){
+    clearInterval(timerInterval);
+    submitQuiz();
+    return;
+}
+
+let m = Math.floor(remaining/60);
+let s = remaining%60;
 
 $("#timer").text(
-
-String(m).padStart(2,'0')+":"+
+String(m).padStart(2,'0') + ":" +
 String(s).padStart(2,'0')
-
 );
-
-time--;
-
-if(time<0){
-
-clearInterval(timer);
-submitQuiz();
-
-}
 
 },1000);
 
 }
 
+
+/* ================= SUBMIT POPUP ================= */
 
 $("#submitQuizBtn").click(function(){
 
@@ -476,19 +514,21 @@ modal.show();
 });
 
 
+/* ================= FINAL SUBMIT ================= */
 
 $("#confirmSubmit").click(function(){
 
 saveAnswer();
 
 $.post(api_url+"question/saveanswer.php",{
-
-quiz_id:quiz_id,
-answers:JSON.stringify(answers)
-
+    attempt_id:attempt_id
 },function(res){
 
 if(res.status=="success"){
+
+/* CLEAR STORAGE AFTER SUBMIT */
+localStorage.removeItem("quiz_start_time_"+attempt_id);
+localStorage.removeItem("quiz_current_index_"+attempt_id);
 
 alert("Quiz Submitted Successfully");
 
@@ -499,4 +539,11 @@ window.location.href="result.php?attempt_id="+res.attempt_id;
 },"json");
 
 });
+
+
+/* AUTO SUBMIT FUNCTION */
+function submitQuiz(){
+$("#confirmSubmit").click();
+}
+
 </script>
