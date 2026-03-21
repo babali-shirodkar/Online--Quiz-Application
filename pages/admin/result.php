@@ -1,296 +1,291 @@
 <?php 
-$attempt_id = $_GET['attempt_id'] ?? 0;
+	$attempt_id = $_GET['attempt_id'] ?? 0;
 ?>
 
 <?php include("includes/header.php"); ?>
 <?php include("includes/sidebar.php"); ?>
 
-
 <div class="page-wrapper">
 
-<div class="page-breadcrumb">
-<div class="row">
-<div class="col-12 d-flex align-items-center justify-content-between">
+	<div class="page-breadcrumb">
+		<div class="row">
+			<div class="col-12 d-flex align-items-center justify-content-between">
 
-<h4 class="page-title">Quiz Result</h4>
+				<h4 class="page-title">Quiz Result</h4>
 
-<ol class="breadcrumb">
-<li class="breadcrumb-item">Quiz</li>
-<li class="breadcrumb-item active">Result</li>
-</ol>
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item">Quiz</li>
+					<li class="breadcrumb-item active">Result</li>
+				</ol>
 
-</div>
-</div>
-</div>
+			</div>
+		</div>
+	</div>
 
-<div class="container-fluid">
+	<div class="container-fluid">
 
+		<div class="card mb-3">
+			<div class="card-body result-summary">
 
+				<div class="summary-row">
 
-<div class="card mb-3">
-<div class="card-body result-summary">
+					<div class="summary-box">
+						<div class="summary-title">Score</div>
+						<div class="summary-value" id="scoreMarks">0/0</div>
+					</div>
 
-<div class="summary-row">
+					<div class="summary-box">
+						<div class="summary-title">Correct</div>
+						<div class="summary-value text-success" id="correctQ">0</div>
+					</div>
 
-<div class="summary-box">
-<div class="summary-title">Score</div>
-<div class="summary-value" id="scoreMarks">0/0</div>
-</div>
+					<div class="summary-box">
+						<div class="summary-title">Incorrect</div>
+						<div class="summary-value text-danger" id="wrongQ">0</div>
+					</div>
 
-<div class="summary-box">
-<div class="summary-title">Correct</div>
-<div class="summary-value text-success" id="correctQ">0</div>
-</div>
+					<div class="summary-box">
+						<div class="summary-title">Not Attempted</div>
+						<div class="summary-value text-secondary" id="skippedQ">0</div>
+					</div>
 
-<div class="summary-box">
-<div class="summary-title">Incorrect</div>
-<div class="summary-value text-danger" id="wrongQ">0</div>
-</div>
+					<div class="summary-box">
+						<div class="summary-title">Accuracy</div>
+						<div class="summary-value" id="accuracy">0%</div>
+					</div>
 
-<div class="summary-box">
-<div class="summary-title">Not Attempted</div>
-<div class="summary-value text-secondary" id="skippedQ">0</div>
-</div>
+				</div>
 
-<div class="summary-box">
-<div class="summary-title">Accuracy</div>
-<div class="summary-value" id="accuracy">0%</div>
-</div>
+				<div class="progress mt-3">
+					<div 
+						id="progressBar"
+						class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+						style="width:0%"
+					></div>
+				</div>
 
-</div>
+			</div>
+		</div>
 
-<div class="progress mt-3">
-<div id="progressBar"
-class="progress-bar progress-bar-striped progress-bar-animated bg-success"
-style="width:0%">
-</div>
-</div>
+		<div class="card">
 
-</div>
-</div>
+			<div class="card-header bg-light text-dark">
+				<h6 class="mb-0">Question Palette</h6>
+			</div>
 
+			<div class="card-body">
 
+				<div id="questionPalette"></div>
 
-<div class="card">
+				<div class="d-flex gap-4 mt-2 small">
 
-<div class="card-header bg-light text-dark">
-<h6 class="mb-0">Question Palette</h6>
-</div>
+					<div class="text-center">
+						<i class="mdi mdi-check-circle text-success legend-icon"></i>
+						<div>Correct</div>
+					</div>
 
-<div class="card-body">
+					<div class="text-center">
+						<i class="mdi mdi-close-circle text-danger legend-icon"></i>
+						<div>Incorrect</div>
+					</div>
 
-<div id="questionPalette"></div>
+					<div class="text-center">
+						<i class="mdi mdi-minus-circle text-secondary legend-icon"></i>
+						<div>Not Answered</div>
+					</div>
 
-<div class="d-flex gap-4 mt-2 small">
+				</div>
 
-    <div class="text-center">
-        <i class="mdi mdi-check-circle text-success legend-icon"></i>
-        <div>Correct</div>
-    </div>
+			</div>
 
-    <div class="text-center">
-        <i class="mdi mdi-close-circle text-danger legend-icon"></i>
-        <div>Incorrect</div>
-    </div>
+		</div>
 
-    <div class="text-center">
-        <i class="mdi mdi-minus-circle text-secondary legend-icon"></i>
-        <div>Not Answered</div>
-    </div>
+		<div class="card mt-3">
 
-</div>
+			<div class="card-header bg-light text-dark">
+				<h6 class="mb-0">Question Review</h6>
+			</div>
 
-</div>
-</div>
+			<div class="card-body">
 
+				<div class="accordion" id="questionReview"></div>
 
+			</div>
 
-<div class="card mt-3">
+		</div>
 
-<div class="card-header bg-light text-dark">
-<h6 class="mb-0">Question Review</h6>
-</div>
+	</div>
 
-<div class="card-body">
-
-<div class="accordion" id="questionReview"></div>
-
-</div>
-
-</div>
-
-</div>
 </div>
 
 <?php include("includes/footer.php"); ?>
 
 <script>
 
-var api_url = "<?php echo $api_url; ?>";
-var attempt_id = "<?php echo $attempt_id; ?>";
+	var api_url = "<?php echo $api_url; ?>";
+	var attempt_id = "<?php echo $attempt_id; ?>";
 
-$(document).ready(function(){
-    loadResult();
-});
-
-function loadResult(){
-
-$.get(api_url+"quiz/getresult.php",{attempt_id:attempt_id},function(res){
-
-if(res.status!="success"){
-    alert("Failed to load result");
-    return;
-}
-
-let s = res.summary;
-
-let total = parseInt(s.total_questions);
-let correct = parseInt(s.correct_answers);
-let wrong = parseInt(s.wrong_answers);
-let skipped = total - correct - wrong;
-
-let percent = total > 0 ? ((correct/total)*100).toFixed(2) : 0;
-
-/* ================= SUMMARY ================= */
-
-$("#scoreMarks").text(correct+" / "+total);
-$("#correctQ").text(correct);
-$("#wrongQ").text(wrong);
-$("#skippedQ").text(skipped);
-$("#accuracy").text(percent+"%");
-$("#progressBar").css("width",percent+"%");
-
-/* ================= PALETTE ================= */
-
-let palette="";
-
-res.questions.forEach(function(q,index){
-
-let color="palette-notanswered"; // ✅ FIXED
-
-if(q.status === "correct")
-    color="palette-correct";
-
-else if(q.status === "wrong")
-    color="palette-wrong";
-
-palette+=`
-<button class="palette-btn ${color}" 
-onclick="scrollToQuestion(${index}, this)">
-${q.question_order}
-</button>
-`;
-
-});
-
-$("#questionPalette").html(palette);
+	$(document).ready(function(){
+		loadResult();
+	});
 
 
-/* ================= QUESTIONS ================= */
+	function loadResult(){
 
-let html="";
+		$.get(api_url + "quiz/getresult.php", { attempt_id: attempt_id }, function(res){
 
-res.questions.forEach(function(q,index){
+			if(res.status != "success"){
+				alert("Failed to load result");
+				return;
+			}
 
-let statusBadge="";
+			let s = res.summary;
 
-if(q.status === "correct")
-    statusBadge='<span class="ms-2 text-success"><i class="mdi mdi-check-circle"></i></span>';
+			let total = parseInt(s.total_questions);
+			let correct = parseInt(s.correct_answers);
+			let wrong = parseInt(s.wrong_answers);
+			let skipped = total - correct - wrong;
 
-else if(q.status === "wrong")
-    statusBadge='<span class="ms-2 text-danger"><i class="mdi mdi-close-circle"></i></span>';
+			let percent = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
 
-else
-    statusBadge='<span class="ms-2 text-secondary"><i class="mdi mdi-skip-next-circle"></i></span>';
+			/* SUMMARY */
 
-html+=`
+			$("#scoreMarks").text(correct + " / " + total);
+			$("#correctQ").text(correct);
+			$("#wrongQ").text(wrong);
+			$("#skippedQ").text(skipped);
+			$("#accuracy").text(percent + "%");
+			$("#progressBar").css("width", percent + "%");
 
-<div class="accordion-item mb-2 shadow-sm border rounded" id="q${index}">
+			/* PALETTE */
 
-<h2 class="accordion-header">
+			let palette = "";
 
-<button class="accordion-button collapsed fw-semibold"
-type="button"
-data-bs-toggle="collapse"
-data-bs-target="#collapse${index}">
+			res.questions.forEach(function(q, index){
 
-Q${q.question_order} ${statusBadge}
+				let color = "palette-notanswered";
 
-</button>
+				if(q.status === "correct")
+					color = "palette-correct";
 
-</h2>
+				else if(q.status === "wrong")
+					color = "palette-wrong";
 
-<div id="collapse${index}" class="accordion-collapse collapse">
+				palette += `
+					<button class="palette-btn ${color}" 
+						onclick="scrollToQuestion(${index}, this)">
+						${q.question_order}
+					</button>
+				`;
 
-<div class="accordion-body">
+			});
 
-<p class="mb-3 fw-bold">${q.question_text}</p>
+			$("#questionPalette").html(palette);
 
-`;
+			/* QUESTIONS */
 
-q.options.forEach(function(op){
+			let html = "";
 
-let className="option-default";
+			res.questions.forEach(function(q, index){
 
-/* ✅ FIX TYPE ISSUE */
-let isSelected = q.user_selected.includes(parseInt(op.id));
+				let statusBadge = "";
 
-if(parseInt(op.is_correct) === 1){
-    className="option-default option-correct";
-}
+				if(q.status === "correct")
+					statusBadge = '<span class="ms-2 text-success"><i class="mdi mdi-check-circle"></i></span>';
 
-if(isSelected && parseInt(op.is_correct) === 0){
-    className="option-default option-wrong";
-}
+				else if(q.status === "wrong")
+					statusBadge = '<span class="ms-2 text-danger"><i class="mdi mdi-close-circle"></i></span>';
 
-html+=`
+				else
+					statusBadge = '<span class="ms-2 text-secondary"><i class="mdi mdi-skip-next-circle"></i></span>';
 
-<div class="${className}">
+				html += `
 
-${op.option_text}
+				<div class="accordion-item mb-2 shadow-sm border rounded" id="q${index}">
 
-${isSelected 
-    ? '<i class="mdi mdi-account-check text-primary ms-2" title="Your Answer"></i>' 
-    : ''}
+					<h2 class="accordion-header">
 
-${parseInt(op.is_correct) === 1 
-    ? '<i class="mdi mdi-check text-success ms-2" title="Correct Answer"></i>' 
-    : ''}
+						<button class="accordion-button collapsed fw-semibold"
+							type="button"
+							data-bs-toggle="collapse"
+							data-bs-target="#collapse${index}">
 
-${isSelected && parseInt(op.is_correct) === 0
-    ? '<i class="mdi mdi-close text-danger ms-2" title="Wrong Answer"></i>'
-    : ''}
+							Q${q.question_order} ${statusBadge}
 
-</div>
-`;
+						</button>
 
-});
+					</h2>
 
-html+=`</div></div></div>`;
+					<div id="collapse${index}" class="accordion-collapse collapse">
 
-});
+						<div class="accordion-body">
 
-$("#questionReview").html(html);
+							<p class="mb-3 fw-bold">${q.question_text}</p>
 
-},"json");
+				`;
 
-}
+				q.options.forEach(function(op){
+
+					let className = "option-default";
+
+					let isSelected = q.user_selected.includes(parseInt(op.id));
+
+					if(parseInt(op.is_correct) === 1){
+						className = "option-default option-correct";
+					}
+
+					if(isSelected && parseInt(op.is_correct) === 0){
+						className = "option-default option-wrong";
+					}
+
+					html += `
+
+						<div class="${className}">
+
+							${op.option_text}
+
+							${isSelected 
+								? '<i class="mdi mdi-account-check text-primary ms-2" title="Your Answer"></i>' 
+								: ''}
+
+							${parseInt(op.is_correct) === 1 
+								? '<i class="mdi mdi-check text-success ms-2" title="Correct Answer"></i>' 
+								: ''}
+
+							${isSelected && parseInt(op.is_correct) === 0
+								? '<i class="mdi mdi-close text-danger ms-2" title="Wrong Answer"></i>'
+								: ''}
+
+						</div>
+					`;
+
+				});
+
+				html += `</div></div></div>`;
+
+			});
+
+			$("#questionReview").html(html);
+
+		}, "json");
+
+	}
 
 
-/* ================= SCROLL ================= */
+	/* SCROLL */
 
-function scrollToQuestion(index, el){
+	function scrollToQuestion(index, el){
 
-$(".palette-btn").removeClass("active");
-$(el).addClass("active");
+		$(".palette-btn").removeClass("active");
+		$(el).addClass("active");
 
-$(".accordion-collapse").removeClass("show");
-$("#collapse"+index).addClass("show");
+		$(".accordion-collapse").removeClass("show");
+		$("#collapse" + index).addClass("show");
 
-$('html,body').animate({
-    scrollTop: $("#q"+index).offset().top - 80
-},400);
+		$('html,body').animate({
+			scrollTop: $("#q" + index).offset().top - 80
+		}, 400);
 
-}
+	}
 
 </script>
