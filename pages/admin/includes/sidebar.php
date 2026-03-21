@@ -37,6 +37,12 @@ $role = $_SESSION['role'] ?? '';
         <span class="hide-menu">Instructor</span>
     </a>
 </li>
+<li class="sidebar-item">
+    <a href="<?php echo $site_url; ?>pages/admin/manageuser.php" class="sidebar-link">
+        <i class="mdi mdi-face"></i>
+        <span class="hide-menu">Participant</span>
+    </a>
+</li>
 
 
 

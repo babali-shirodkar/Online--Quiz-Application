@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 require_once "../../confi/database.php";
-include "../../userAccess.php";
+include "../../../userAccess.php";
 
 $json_data = file_get_contents("php://input");
 $data = json_decode($json_data, true);

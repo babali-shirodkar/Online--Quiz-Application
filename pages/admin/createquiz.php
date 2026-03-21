@@ -86,14 +86,6 @@
                                            placeholder="Total Questions">
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Attempt Limit</label>
-                                    <input type="number"
-                                           class="form-control form-control-sm"
-                                           id="attempt"
-                                           placeholder="Total Attempts">
-                                </div>
-
                             </div>
 
                         </div>

@@ -154,24 +154,41 @@ html+=`
 
 <div class="col-md-4 quiz-item" data-category="${q.category_id}">
 
-<div class="card quiz-card mb-4">
+<div class="card quiz-card mb-4 shadow-sm">
 
 <div class="card-body">
 
-<h5 class="quiz-title">${q.title}</h5>
+<h5 class="quiz-title mb-2">${q.title}</h5>
 
-<div class="quiz-info">
+<div class="quiz-meta mb-3">
 
-<span>${q.total_questions} Questions</span>
-<span>${q.duration} Min</span>
-<span>${q.total_marks} Marks</span>
+<span>
+<i class="mdi mdi-help-circle-outline text-primary"></i> 
+${q.total_questions} Questions
+</span>
+
+<span>
+<i class="mdi mdi-clock-outline text-warning"></i> 
+${q.duration} Min
+</span>
+
+<span>
+<i class="mdi mdi-star-outline text-success"></i> 
+${q.total_marks} Marks
+</span>
 
 </div>
 
-<a href="startquiz.php?quiz_id=${q.quiz_id}"
-class="btn btn-purple btn-sm">
+<div class="d-flex justify-content-between align-items-center">
 
-Start Now
+<span class="badge bg-light text-dark small">
+<i class="mdi mdi-tag-outline"></i> ${q.category_name ?? ''}
+</span>
+
+<a href="startquiz.php?quiz_id=${q.quiz_id}"
+class="btn btn-primary btn-sm">
+
+Start
 
 </a>
 
@@ -181,6 +198,7 @@ Start Now
 
 </div>
 
+</div>
 `;
 
 });

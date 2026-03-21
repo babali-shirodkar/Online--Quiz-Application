@@ -17,6 +17,7 @@ include "../../userAccess.php";
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $site_url; ?>assets/images/favicon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo $site_url; ?>assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="<?php echo $site_url; ?>assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
     <link href="<?php echo $site_url; ?>assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
@@ -99,15 +100,7 @@ include "../../userAccess.php";
 
               <!-- Search -->
 
-              <li class="nav-item search-box">
-                <a class="nav-link waves-effect waves-dark" href="javascript:void(0)">
-                  <i class="mdi mdi-magnify fs-4"></i>
-                </a>
-                <form class="app-search position-absolute">
-                  <input type="text" class="form-control" placeholder="Search &amp; enter" />
-                  <a class="srh-btn"><i class="mdi mdi-window-close"></i></a>
-                </form>
-              </li>
+              
             </ul>
 
      

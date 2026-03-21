@@ -73,7 +73,7 @@ style="width:0%">
 
 <div class="card">
 
-<div class="card-header bg-dark text-white">
+<div class="card-header bg-light text-dark">
 <h6 class="mb-0">Question Palette</h6>
 </div>
 
@@ -81,10 +81,23 @@ style="width:0%">
 
 <div id="questionPalette"></div>
 
-<div class="mt-2 small">
-<span class="badge bg-success">Correct</span>
-<span class="badge bg-danger">Incorrect</span>
-<span class="badge bg-light text-dark border">Not Answered</span>
+<div class="d-flex gap-4 mt-2 small">
+
+    <div class="text-center">
+        <i class="mdi mdi-check-circle text-success legend-icon"></i>
+        <div>Correct</div>
+    </div>
+
+    <div class="text-center">
+        <i class="mdi mdi-close-circle text-danger legend-icon"></i>
+        <div>Incorrect</div>
+    </div>
+
+    <div class="text-center">
+        <i class="mdi mdi-minus-circle text-secondary legend-icon"></i>
+        <div>Not Answered</div>
+    </div>
+
 </div>
 
 </div>
@@ -94,7 +107,7 @@ style="width:0%">
 
 <div class="card mt-3">
 
-<div class="card-header bg-dark text-white">
+<div class="card-header bg-light text-dark">
 <h6 class="mb-0">Question Review</h6>
 </div>
 
@@ -182,13 +195,13 @@ res.questions.forEach(function(q,index){
 let statusBadge="";
 
 if(q.status === "correct")
-    statusBadge='<span class="badge bg-success ms-2">Correct</span>';
+    statusBadge='<span class="ms-2 text-success"><i class="mdi mdi-check-circle"></i></span>';
 
 else if(q.status === "wrong")
-    statusBadge='<span class="badge bg-danger ms-2">Incorrect</span>';
+    statusBadge='<span class="ms-2 text-danger"><i class="mdi mdi-close-circle"></i></span>';
 
 else
-    statusBadge='<span class="badge bg-secondary ms-2">Skipped</span>';
+    statusBadge='<span class="ms-2 text-secondary"><i class="mdi mdi-skip-next-circle"></i></span>';
 
 html+=`
 
@@ -237,11 +250,15 @@ html+=`
 ${op.option_text}
 
 ${isSelected 
-    ? '<span class="badge bg-primary ms-2">Your Answer</span>' 
+    ? '<i class="mdi mdi-account-check text-primary ms-2" title="Your Answer"></i>' 
     : ''}
 
 ${parseInt(op.is_correct) === 1 
-    ? '<span class="badge bg-success ms-2">Correct</span>' 
+    ? '<i class="mdi mdi-check text-success ms-2" title="Correct Answer"></i>' 
+    : ''}
+
+${isSelected && parseInt(op.is_correct) === 0
+    ? '<i class="mdi mdi-close text-danger ms-2" title="Wrong Answer"></i>'
     : ''}
 
 </div>
