@@ -29,60 +29,74 @@
 
 			<div class="col-md-8">
 
-				<div class="card instruction-card">
+				<div class="card instruction-card shadow-sm">
 
-					<div class="card-body">
+                    <div class="card-body p-4">
 
-						<div class="quiz-header mb-4">
+                        <!-- QUIZ HEADER -->
+                        <div class="quiz-header text-center mb-4">
 
-							<h3 class="quiz-title">Online Assessment</h3>
+                          <h3 class="quiz-title" id="quizTitle">Loading...</h3>
 
-							<div class="quiz-meta">
-								<span><i class="mdi mdi-clock-outline"></i> 30 Minutes</span>
-								<span><i class="mdi mdi-help-circle"></i> 20 Questions</span>
-								<span><i class="mdi mdi-star"></i> 40 Marks</span>
-							</div>
+                            <div class="quiz-meta">
+                                <span><i class="mdi mdi-clock-outline"></i> 
+                                    <span id="quizDuration">0</span> Minutes
+                                </span>
 
-						</div>
+                                <span><i class="mdi mdi-help-circle"></i> 
+                                    <span id="quizQuestions">0</span> Questions
+                                </span>
 
-						<hr>
+                                <span><i class="mdi mdi-star"></i> 
+                                    <span id="quizMarks">0</span> Marks
+                                </span>
+                            </div>
 
-						<h4 class="section-title">
-							<i class="mdi mdi-information-outline"></i>
-							General Instructions
-						</h4>
+                        </div>
 
-						<ul class="instruction-list">
-							<li>Timer will start once you click Start Quiz.</li>
-							<li>Each question carries equal marks.</li>
-							<li>Do not refresh or close the browser.</li>
-							<li>Click Submit before time expires.</li>
-							<li>Use navigation buttons to move between questions.</li>
-						</ul>
+                        <!-- INSTRUCTIONS -->
+                        <div class="instruction-section">
 
-						<h4 class="section-title">
-							<i class="mdi mdi-file-document-outline"></i>
-							Declaration
-						</h4>
+                            <h5 class="section-title">
+                                <i class="mdi mdi-information-outline"></i> Instructions
+                            </h5>
 
-						<div class="declaration-box">
-							<input type="checkbox" id="declaration">
-							<label>
-								I confirm that I have read all instructions and will follow the rules.
-							</label>
-						</div>
+                            <ul class="instruction-list">
+                                <li>Timer starts immediately after clicking start</li>
+                                <li>Each question has equal marks</li>
+                                <li>Do not refresh or close the browser</li>
+                                <li>Submit before time expires</li>
+                                <li>Use navigation to move between questions</li>
+                            </ul>
 
-						<div class="text-end mt-4">
+                        </div>
 
-							<button class="btn btn-success" id="startBtn">
-								Start Test
-							</button>
+                        <!-- DECLARATION -->
+                        <div class="declaration-card mt-4">
 
-						</div>
+                            <label class="d-flex align-items-start gap-2">
 
-					</div>
+                                <input type="checkbox" id="declaration">
 
-				</div>
+                                <span>
+                                    I have read all instructions and agree to follow the rules.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                        <!-- BUTTON -->
+                        <div class="text-center mt-4">
+
+                            <button class="btn btn-primary px-4" id="startBtn">
+                                <i class="mdi mdi-play-circle-outline"></i> Start Quiz
+                            </button>
+
+                        </div>
+
+                    </div>
+                    </div>
 
 			</div>
 
@@ -99,7 +113,40 @@
 	let quiz_id = "<?php echo $quiz_id; ?>";
 	let api_url = "<?php echo $api_url; ?>";
 
+    $(document).ready(function(){
+        loadQuizDetails();
+    });
+
+
+    function loadQuizDetails(){
+
+        $.get(api_url + "quiz/getquizdetails.php", {
+            quiz_id: quiz_id
+        }, function(res){
+
+            if(res.status !== "success"){
+                alert(res.message);
+                return;
+            }
+
+            let q = res.data;
+
+            $("#quizTitle").text(q.title);
+            $("#quizDuration").text(q.duration);
+            $("#quizQuestions").text(q.total_questions);
+            $("#quizMarks").text(q.total_marks);
+
+        }, "json");
+
+    }
+
 	/* START QUIZ */
+
+    $("#startBtn").prop("disabled", true);
+
+    $("#declaration").on("change", function(){
+        $("#startBtn").prop("disabled", !this.checked);
+    });
 
 	$("#startBtn").click(function(){
 
@@ -113,7 +160,6 @@
 			return;
 		}
 
-		$(this).prop("disabled", true).text("Starting...");
 
 		$.post(api_url + "quiz/startquiz.php", {
 			quiz_id: quiz_id
@@ -138,5 +184,9 @@
 		});
 
 	});
+
+
+
+
 
 </script>

@@ -1038,3 +1038,70 @@ overflow:hidden;
 }
 
 
+/* start quiz page */
+
+.instruction-card{
+    border-radius:10px;
+    background:#fff;
+}
+
+
+.quiz-title{
+    font-weight:600;
+    color:#333;
+}
+
+.quiz-meta{
+    display:flex;
+    gap:15px;
+    margin-top:10px;
+}
+
+.meta-box{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    color:#555;
+    background:#f8f9fa;
+    padding:6px 10px;
+    border-radius:6px;
+}
+
+.meta-box i{
+    font-size:16px;
+    color:#6c757d;
+}
+
+
+
+.section-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:10px;
+    color:#333;
+}
+
+.instruction-list{
+    padding-left:18px;
+    color:#555;
+    font-size:14px;
+}
+
+.instruction-list li{
+    margin-bottom:6px;
+}
+
+
+.declaration-card{
+    background:#f8f9fa;
+    border-radius:8px;
+    padding:12px;
+    font-size:14px;
+    color:#444;
+}
+
+#startBtn{
+    border-radius:6px;
+    font-size:14px;
+}
