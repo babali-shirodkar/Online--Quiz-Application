@@ -1,185 +1,198 @@
-<?php
-
-$quiz_id = $_GET['quiz_id'];
-?>
-
 <?php include("includes/header.php"); ?>
 <?php include("includes/sidebar.php"); ?>
 
 <div class="page-wrapper">
-<div class="container-fluid">
 
-<!-- HEADER -->
+	<div class="container-fluid">
 
-<div class="quiz-header">
+		<!-- HEADER -->
 
-<div class="quiz-title" id="quizTitle">
-    
-</div>
+		<div class="quiz-header">
 
-<div class="timer-box">
-<span>Time Left</span>
-<div id="timer">00:00</div>
-</div>
+			<div class="quiz-title" id="quizTitle"></div>
 
-</div>
+			<div class="timer-box">
+				<span>Time Left</span>
+				<div id="timer">00:00</div>
+			</div>
 
+		</div>
 
-<div class="row">
+		<div class="row">
 
-<!-- QUESTION PANEL -->
+			<!-- QUESTION PANEL -->
 
-<div class="col-md-9 quiz-left">
+			<div class="col-md-9 quiz-left">
 
-<div class="card">
-<div class="card-body quiz-card-body">
+				<div class="card">
+					<div class="card-body quiz-card-body">
 
-<div class="d-flex justify-content-between align-items-center">
+						<div class="d-flex justify-content-between align-items-center">
 
-<h5 id="qtitle"></h5>
+							<h5 id="qtitle"></h5>
 
-<div class="marks-box">
-Marks : <span id="questionMarks" class="badge bg-success"></span>
-</div>
+							<div class="marks-box">
+								Marks : 
+								<span id="questionMarks" class="badge bg-success"></span>
+							</div>
 
-</div>
+						</div>
 
-<hr>
+						<hr>
 
-<div id="questionBox"></div>
+						<div id="questionBox"></div>
 
-<hr>
+						<hr>
 
+						<div class="d-flex justify-content-between">
 
-<div class="d-flex justify-content-between">
+							<div>
 
-<div>
+								<button class="btn btn-warning btn-sm" id="markReviewBtn">
+									Mark for Review & Next
+								</button>
 
-<button class="btn btn-warning btn-sm" id="markReviewBtn">
-Mark for Review & Next
-</button>
+								<button class="btn btn-secondary btn-sm" id="clearResponseBtn">
+									Clear Response
+								</button>
 
-<button class="btn btn-secondary btn-sm" id="clearResponseBtn">
-Clear Response
-</button>
+							</div>
 
-</div>
+							<div>
 
-<div>
+								<button class="btn btn-success btn-sm text-white" id="saveNextBtn">
+									Save & Next
+								</button>
 
-<button class="btn btn-success btn-sm text-white" id="saveNextBtn">
-Save & Next
-</button>
+							</div>
 
-</div>
+						</div>
 
-</div>
+					</div>
+				</div>
 
-</div>
-</div>
+			</div>
 
-</div>
+			<!-- QUESTION PALETTE -->
 
+			<div class="col-md-3 quiz-right">
 
-<!-- QUESTION PALETTE -->
+				<div class="card">
+					<div class="card-body quiz-card-body">
 
-<div class="col-md-3 quiz-right">
+						<h6 class="fw-bold mb-2">Questions</h6>
 
-<div class="card">
-<div class="card-body quiz-card-body">
+						<div class="legend">
 
-<h6 class="fw-bold mb-2">Questions</h6>
+							<div>
+								<span class="box answered"></span> Answered
+							</div>
 
-<div class="legend">
+							<div>
+								<span class="box review"></span> Review
+							</div>
 
-<div><span class="box answered"></span> Answered</div>
-<div><span class="box review"></span> Review</div>
-<div><span class="box notanswered"></span> Not Attempted</div>
+							<div>
+								<span class="box notanswered"></span> Not Attempted
+							</div>
 
-</div>
+						</div>
 
-<hr>
+						<hr>
 
-<div id="questionPalette" class="palette-grid"></div>
+						<div id="questionPalette" class="palette-grid"></div>
 
-<hr>
+						<hr>
 
-<div class="quiz-stats">
+						<div class="quiz-stats">
 
-<p>Total : <span id="totalQ"></span></p>
-<p>Attempted : <span id="attemptedQ">0</span></p>
-<p>Remaining : <span id="remainingQ"></span></p>
-<p>Review : <span id="reviewQ">0</span></p>
+							<p>Total : <span id="totalQ"></span></p>
+							<p>Attempted : <span id="attemptedQ">0</span></p>
+							<p>Remaining : <span id="remainingQ"></span></p>
+							<p>Review : <span id="reviewQ">0</span></p>
 
-</div>
+						</div>
 
-<button class="btn btn-primary btn-sm w-100 mt-2" id="submitQuizBtn">
-Submit Test
-</button>
+						<button class="btn btn-primary btn-sm w-100 mt-2" id="submitQuizBtn">
+							Submit Test
+						</button>
 
-<div class="modal fade" id="submitModal" tabindex="-1">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content">
+						<div class="modal fade" id="submitModal" tabindex="-1">
 
-<div class="modal-header">
-<h5 class="modal-title">Submit Test</h5>
-<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-</div>
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
 
-<div class="modal-body">
+									<div class="modal-header">
+										<h5 class="modal-title">Submit Test</h5>
+										<button 
+											type="button" 
+											class="btn-close" 
+											data-bs-dismiss="modal"
+										></button>
+									</div>
 
-<table class="table table-bordered text-center">
+									<div class="modal-body">
 
-<thead>
-<tr>
-<th>Total Questions</th>
-<th>Attempted</th>
-<th>Remaining</th>
-<th>Marked Review</th>
-</tr>
-</thead>
+										<table class="table table-bordered text-center">
 
-<tbody>
-<tr>
-<td id="modalTotal"></td>
-<td id="modalAttempted"></td>
-<td id="modalRemaining"></td>
-<td id="modalReview"></td>
-</tr>
-</tbody>
+											<thead>
+												<tr>
+													<th>Total Questions</th>
+													<th>Attempted</th>
+													<th>Remaining</th>
+													<th>Marked Review</th>
+												</tr>
+											</thead>
 
-</table>
+											<tbody>
+												<tr>
+													<td id="modalTotal"></td>
+													<td id="modalAttempted"></td>
+													<td id="modalRemaining"></td>
+													<td id="modalReview"></td>
+												</tr>
+											</tbody>
 
-<p class="text-danger text-center mt-2">
-Are you sure you want to submit the test?
-</p>
+										</table>
 
-</div>
+										<p class="text-danger text-center mt-2">
+											Are you sure you want to submit the test?
+										</p>
 
-<div class="modal-footer">
+									</div>
 
-<button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-Cancel
-</button>
+									<div class="modal-footer">
 
-<button class="btn btn-primary btn-sm" id="confirmSubmit">
-Submit Test
-</button>
+										<button 
+											class="btn btn-secondary btn-sm" 
+											data-bs-dismiss="modal"
+										>
+											Cancel
+										</button>
 
-</div>
+										<button 
+											class="btn btn-primary btn-sm" 
+											id="confirmSubmit"
+										>
+											Submit Test
+										</button>
 
-</div>
-</div>
-</div>
+									</div>
 
-</div>
-</div>
+								</div>
+							</div>
 
-</div>
+						</div>
 
-</div>
+					</div>
+				</div>
 
-</div>
+			</div>
+
+		</div>
+
+	</div>
+
 </div>
 
 <?php include("includes/footer.php"); ?>
@@ -187,316 +200,357 @@ Submit Test
 <style>
 </style>
 
-
 <script>
 
-let api_url = "<?php echo $api_url; ?>";
-let quiz_id = "<?php echo $quiz_id ?>";
+	let api_url = "<?php echo $api_url; ?>";
+	let attempt_id = "<?php echo $_GET['attempt_id']; ?>";
 
-let questions=[];
-let currentIndex=0;
-let answers={};
-let reviewQuestions=[];
+	let questions = [];
+	let currentIndex = 0;
+	let answers = {};
+	let reviewQuestions = [];
+	let timerInterval = null;
 
-$(document).ready(function(){
-loadQuestions();
-});
+	$(document).ready(function(){
+		loadQuestions();
+	});
 
 
-function loadQuestions(){
+	/* LOAD QUESTIONS */
 
-$.get(api_url+"question/getquizquestions.php?quiz_id="+quiz_id,function(res){
+	function loadQuestions(){
 
-questions=res.questions;
+		$.get(api_url + "question/getquizquestions.php?attempt_id=" + attempt_id, function(res){
 
+			questions = res.questions;
 
+			$("#quizTitle").text(res.quiz_name);
 
-$("#quizTitle").text(res.quiz_name);
+			let savedIndex = localStorage.getItem("quiz_current_index_" + attempt_id);
 
-$("#totalQ").text(questions.length);
-$("#remainingQ").text(questions.length);
+			if(savedIndex){
+				currentIndex = parseInt(savedIndex);
+			}
 
-createPalette();
-loadQuestion();
-startTimer(res.duration);
+			questions.forEach(q => {
+				if(q.saved_answers && q.saved_answers.length > 0){
+					answers[q.id] = q.saved_answers;
+				}
+			});
 
-},"json");
+			$("#totalQ").text(questions.length);
+			updateCount();
 
-}
+			createPalette();
+			loadQuestion();
 
+			startTimer(res.duration);
 
+		}, "json");
 
+	}
 
-function createPalette(){
 
-let html="";
+	/* CREATE PALETTE */
 
-questions.forEach((q,i)=>{
+	function createPalette(){
 
-html+=`<div class="qbox notanswered" onclick="jumpQuestion(${i})">${i+1}</div>`;
+		let html = "";
 
-});
+		questions.forEach((q, i) => {
 
-$("#questionPalette").html(html);
+			let cls = "notanswered";
 
-}
+			if(answers[q.id]) cls = "answered";
+			if(reviewQuestions.includes(q.id)) cls = "review";
 
+			html += `<div class="qbox ${cls}" onclick="jumpQuestion(${i})">${i+1}</div>`;
 
+		});
 
+		$("#questionPalette").html(html);
 
-function loadQuestion(){
+	}
 
-let q = questions[currentIndex];
 
-$("#qtitle").text("Question " + (currentIndex+1));
-$("#questionMarks").text("+" + (q.marks ?? 0));
+	/* LOAD QUESTION */
 
-let html = `<p>${q.question_text}</p>`;
+	function loadQuestion(){
 
+		localStorage.setItem("quiz_current_index_" + attempt_id, currentIndex);
 
+		let q = questions[currentIndex];
 
+		$("#qtitle").text("Question " + (currentIndex + 1));
+		$("#questionMarks").text("+" + (q.marks ?? 0));
 
-if(q.question_type == "truefalse"){
+		let html = `<p>${q.question_text}</p>`;
 
-    q.options.forEach(op=>{
+		if(q.question_type == "truefalse"){
 
-        let checked = "";
+			q.options.forEach(op => {
 
-        if(answers[q.id] && answers[q.id].includes(op.id.toString())){
-            checked = "checked";
-        }
+				let checked = "";
 
-        html += `
-        <div class="option-container">
+				if(answers[q.id] && answers[q.id].includes(op.id.toString())){
+					checked = "checked";
+				}
 
-            <input type="radio"
-            name="option_${q.id}"
-            value="${op.id}" ${checked}>
+				html += `
+					<div class="option-container">
+						<input type="radio" name="option_${q.id}" value="${op.id}" ${checked}>
+						<div class="option-row">${op.option_text}</div>
+					</div>
+				`;
 
-            <div class="option-row">${op.option_text}</div>
+			});
 
-        </div>
-        `;
-    });
-}
+		}
+		else{
 
+			let inputType = (q.question_type == "multiselect") ? "checkbox" : "radio";
 
+			q.options.forEach(op => {
 
+				let checked = "";
 
-else{
+				if(answers[q.id] && answers[q.id].includes(op.id.toString())){
+					checked = "checked";
+				}
 
-let inputType = (q.question_type == "multiselect") ? "checkbox" : "radio";
+				html += `
+					<div class="option-container">
+						<input type="${inputType}" name="option_${q.id}" value="${op.id}" ${checked}>
+						<div class="option-row">${op.option_text}</div>
+					</div>
+				`;
 
-q.options.forEach(op=>{
+			});
 
-let checked="";
+		}
 
-if(answers[q.id] && answers[q.id].includes(op.id.toString())){
-checked="checked";
-}
+		$("#questionBox").html(html);
 
-html += `
+		updatePalette();
 
-<div class="option-container">
+	}
 
-<input type="${inputType}"
-name="option_${q.id}"
-value="${op.id}" ${checked}>
 
-<div class="option-row">${op.option_text}</div>
+	$(document).on("click", ".option-row", function(){
+		$(this).prev("input").prop("checked", true).trigger("change");
+	});
 
-</div>
 
-`;
+	/* UPDATE PALETTE */
 
-});
+	function updatePalette(){
 
-}
+		$(".qbox").removeClass("current");
+		$(".qbox").eq(currentIndex).addClass("current");
 
-$("#questionBox").html(html);
+	}
 
-updatePalette();
 
-}
+	/* SAVE ANSWER */
 
-$(document).on("click",".option-row",function(){
+	function saveAnswer(){
 
-$(this).prev("input").prop("checked",true).trigger("change");
+		let selected = [];
 
-});
+		$("#questionBox input:checked").each(function(){
+			selected.push($(this).val());
+		});
 
-function updatePalette(){
+		if(selected.length > 0){
 
-$(".qbox").removeClass("current");
+			answers[questions[currentIndex].id] = selected;
 
-$(".qbox").eq(currentIndex).addClass("current");
+			$.post(api_url + "question/savesingleanswer.php", {
+				attempt_id: attempt_id,
+				question_id: questions[currentIndex].id,
+				options: selected
+			});
 
-}
+			$(".qbox").eq(currentIndex)
+				.removeClass("notanswered")
+				.addClass("answered");
 
+		}
 
+		updateCount();
 
-function saveAnswer(){
+	}
 
-let selected=[];
 
-$("#questionBox input:checked").each(function(){
-selected.push($(this).val());
-});
+	/* CLEAR RESPONSE */
 
-if(selected.length>0){
+	$("#clearResponseBtn").click(function(){
 
-answers[questions[currentIndex].id]=selected;
+		delete answers[questions[currentIndex].id];
 
-$(".qbox").eq(currentIndex)
-.removeClass("notanswered")
-.addClass("answered");
+		$("#questionBox input").prop("checked", false);
 
-}
+		$.post(api_url + "question/savesingleanswer.php", {
+			attempt_id: attempt_id,
+			question_id: questions[currentIndex].id,
+			options: []
+		});
 
-updateCount();
+		$(".qbox").eq(currentIndex)
+			.removeClass("answered review")
+			.addClass("notanswered");
 
-}
+		updateCount();
 
+	});
 
 
+	/* MARK REVIEW */
 
-$("#clearResponseBtn").click(function(){
+	$("#markReviewBtn").click(function(){
 
-delete answers[questions[currentIndex].id];
+		let qid = questions[currentIndex].id;
 
-$("#questionBox input").prop("checked",false);
+		if(!reviewQuestions.includes(qid)){
+			reviewQuestions.push(qid);
+		}
 
-$(".qbox").eq(currentIndex)
-.removeClass("answered review")
-.addClass("notanswered");
+		$(".qbox").eq(currentIndex)
+			.removeClass("answered notanswered")
+			.addClass("review");
 
-updateCount();
+		if(currentIndex < questions.length - 1){
+			currentIndex++;
+			loadQuestion();
+		}
 
-});
+		updateCount();
 
+	});
 
 
-$("#markReviewBtn").click(function(){
+	/* SAVE NEXT */
 
-let qid=questions[currentIndex].id;
+	$("#saveNextBtn").click(function(){
 
-if(!reviewQuestions.includes(qid)){
-reviewQuestions.push(qid);
-}
+		saveAnswer();
 
-$(".qbox").eq(currentIndex)
-.removeClass("answered notanswered")
-.addClass("review");
+		if(currentIndex < questions.length - 1){
+			currentIndex++;
+			loadQuestion();
+		}
 
-if(currentIndex < questions.length-1){
-currentIndex++;
-loadQuestion();
-}
+	});
 
-updateCount();
 
-});
+	function jumpQuestion(i){
+		currentIndex = i;
+		loadQuestion();
+	}
 
 
-$("#saveNextBtn").click(function(){
+	/* COUNT */
 
-saveAnswer();
+	function updateCount(){
 
-if(currentIndex < questions.length-1){
-currentIndex++;
-loadQuestion();
-}
+		let attempted = Object.keys(answers).length;
 
-});
+		$("#attemptedQ").text(attempted);
+		$("#remainingQ").text(questions.length - attempted);
+		$("#reviewQ").text(reviewQuestions.length);
 
+	}
 
-function jumpQuestion(i){
-currentIndex=i;
-loadQuestion();
-}
 
+	/* TIMER */
 
-function updateCount(){
+	function startTimer(minutes){
 
-let attempted=Object.keys(answers).length;
+		let totalTime = minutes * 60;
 
-$("#attemptedQ").text(attempted);
-$("#remainingQ").text(questions.length-attempted);
-$("#reviewQ").text(reviewQuestions.length);
+		let savedStart = localStorage.getItem("quiz_start_time_" + attempt_id);
 
-}
+		if(!savedStart){
+			savedStart = Math.floor(Date.now() / 1000);
+			localStorage.setItem("quiz_start_time_" + attempt_id, savedStart);
+		}
 
+		clearInterval(timerInterval);
 
+		timerInterval = setInterval(function(){
 
-function startTimer(minutes){
+			let now = Math.floor(Date.now() / 1000);
+			let elapsed = now - savedStart;
 
-let time=minutes*60;
+			let remaining = totalTime - elapsed;
 
-let timer=setInterval(function(){
+			if(remaining <= 0){
+				clearInterval(timerInterval);
+				submitQuiz();
+				return;
+			}
 
-let m=Math.floor(time/60);
-let s=time%60;
+			let m = Math.floor(remaining / 60);
+			let s = remaining % 60;
 
-$("#timer").text(
+			$("#timer").text(
+				String(m).padStart(2, '0') + ":" +
+				String(s).padStart(2, '0')
+			);
 
-String(m).padStart(2,'0')+":"+
-String(s).padStart(2,'0')
+		}, 1000);
 
-);
+	}
 
-time--;
 
-if(time<0){
+	/* SUBMIT POPUP */
 
-clearInterval(timer);
-submitQuiz();
+	$("#submitQuizBtn").click(function(){
 
-}
+		let total = questions.length;
+		let attempted = Object.keys(answers).length;
+		let review = reviewQuestions.length;
+		let remaining = total - attempted;
 
-},1000);
+		$("#modalTotal").text(total);
+		$("#modalAttempted").text(attempted);
+		$("#modalRemaining").text(remaining);
+		$("#modalReview").text(review);
 
-}
+		let modal = new bootstrap.Modal(document.getElementById('submitModal'));
+		modal.show();
 
+	});
 
-$("#submitQuizBtn").click(function(){
 
-let total = questions.length;
-let attempted = Object.keys(answers).length;
-let review = reviewQuestions.length;
-let remaining = total - attempted;
+	/* Submit Quiz */
 
-$("#modalTotal").text(total);
-$("#modalAttempted").text(attempted);
-$("#modalRemaining").text(remaining);
-$("#modalReview").text(review);
+	$("#confirmSubmit").click(function(){
 
-let modal = new bootstrap.Modal(document.getElementById('submitModal'));
-modal.show();
+		saveAnswer();
 
-});
+		$.post(api_url + "question/saveanswer.php", {
+			attempt_id: attempt_id
+		}, function(res){
 
+			if(res.status == "success"){
 
+				localStorage.removeItem("quiz_start_time_" + attempt_id);
+				localStorage.removeItem("quiz_current_index_" + attempt_id);
 
-$("#confirmSubmit").click(function(){
+				alert("Quiz Submitted Successfully");
 
-saveAnswer();
+				window.location.href = "result.php?attempt_id=" + res.attempt_id;
 
-$.post(api_url+"question/saveanswer.php",{
+			}
 
-quiz_id:quiz_id,
-answers:JSON.stringify(answers)
+		}, "json");
 
-},function(res){
+	});
 
-if(res.status=="success"){
 
-alert("Quiz Submitted Successfully");
+	function submitQuiz(){
+		$("#confirmSubmit").click();
+	}
 
-window.location.href="result.php?attempt_id="+res.attempt_id;
-
-}
-
-},"json");
-
-});
 </script>

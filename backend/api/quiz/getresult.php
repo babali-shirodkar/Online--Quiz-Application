@@ -15,6 +15,7 @@ if(!$attempt_id){
     exit;
 }
 
+/* ================= VALIDATE ATTEMPT ================= */
 
 $attempt = $conn->prepare("
 SELECT quiz_id 
@@ -24,6 +25,7 @@ WHERE id=?
 
 $attempt->bind_param("i",$attempt_id);
 $attempt->execute();
+
 $attemptData = $attempt->get_result()->fetch_assoc();
 
 if(!$attemptData){
@@ -34,9 +36,8 @@ if(!$attemptData){
     exit;
 }
 
-$quiz_id = $attemptData['quiz_id'];
 
-
+/* ================= GET SUMMARY ================= */
 
 $summary = $conn->prepare("
 SELECT r.total_questions,
@@ -51,25 +52,36 @@ WHERE r.attempt_id=?
 
 $summary->bind_param("i",$attempt_id);
 $summary->execute();
+
 $summaryData = $summary->get_result()->fetch_assoc();
+
+
+/* ================= GET QUESTIONS FROM ATTEMPT ================= */
 
 $questions = [];
 
 $q = $conn->prepare("
-SELECT id, question_text 
-FROM questions 
-WHERE quiz_id=?
+SELECT 
+aq.question_id,
+aq.question_order,
+q.question_text,
+aq.options_order
+FROM attempt_questions aq
+JOIN questions q ON q.id = aq.question_id
+WHERE aq.attempt_id=?
+ORDER BY aq.question_order ASC
 ");
 
-$q->bind_param("i",$quiz_id);
+$q->bind_param("i",$attempt_id);
 $q->execute();
+
 $qres = $q->get_result();
 
 while($row = $qres->fetch_assoc()){
 
-    $question_id = $row['id'];
+    $question_id = $row['question_id'];
 
-  
+    /* ================= USER SELECTED ================= */
 
     $user_selected = [];
 
@@ -81,6 +93,7 @@ while($row = $qres->fetch_assoc()){
 
     $ua->bind_param("ii",$attempt_id,$question_id);
     $ua->execute();
+
     $uaRes = $ua->get_result();
 
     while($r = $uaRes->fetch_assoc()){
@@ -88,6 +101,7 @@ while($row = $qres->fetch_assoc()){
     }
 
 
+    /* ================= CORRECT OPTIONS ================= */
 
     $correct_options = [];
 
@@ -99,56 +113,62 @@ while($row = $qres->fetch_assoc()){
 
     $co->bind_param("i",$question_id);
     $co->execute();
+
     $coRes = $co->get_result();
 
     while($c = $coRes->fetch_assoc()){
         $correct_options[] = $c['id'];
     }
 
-   
+
+    /* ================= OPTIONS IN SAME ORDER ================= */
+
+    $option_ids = json_decode($row['options_order'], true);
+
+    $optList = implode(",", $option_ids);
 
     $options = [];
 
-    $o = $conn->prepare("
-    SELECT id, option_text, is_correct 
-    FROM options 
-    WHERE question_id=?
+    $optQuery = $conn->query("
+    SELECT id, option_text, is_correct
+    FROM options
+    WHERE id IN ($optList)
+    ORDER BY FIELD(id,$optList)
     ");
 
-    $o->bind_param("i",$question_id);
-    $o->execute();
-    $ores = $o->get_result();
-
-    while($opt = $ores->fetch_assoc()){
+    while($opt = $optQuery->fetch_assoc()){
         $options[] = $opt;
     }
 
-    
+
+    /* ================= STATUS ================= */
 
     sort($user_selected);
     sort($correct_options);
-
-    $is_correct_flag = 0;
 
     if(empty($user_selected)){
         $status = "skipped";
     }
     else if($user_selected === $correct_options){
         $status = "correct";
-        $is_correct_flag = 1;
     }
     else{
         $status = "wrong";
     }
 
-    $row['user_selected'] = $user_selected;   
-    $row['correct_options'] = $correct_options; 
-    $row['correct'] = $is_correct_flag; 
-    $row['status'] = $status; 
-    $row['options'] = $options;
 
-    $questions[] = $row;
+
+    $questions[] = [
+        "question_id"=>$question_id,
+        "question_order"=>$row['question_order'],
+        "question_text"=>$row['question_text'],
+        "user_selected"=>$user_selected,
+        "correct_options"=>$correct_options,
+        "status"=>$status,
+        "options"=>$options
+    ];
 }
+
 
 
 

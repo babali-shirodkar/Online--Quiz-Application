@@ -1,5 +1,4 @@
 <?php
-
 header("Content-Type: application/json");
 
 require_once "../../confi/database.php";
@@ -9,139 +8,50 @@ $conn->begin_transaction();
 
 try{
 
-$quiz_id = $_POST['quiz_id'] ?? '';
-$answers_json = $_POST['answers'] ?? '';
-
-if(!$quiz_id || !$answers_json){
-    throw new Exception("Missing quiz data");
-}
-
-$answers = json_decode($answers_json,true);
-
-if(!is_array($answers)){
-    throw new Exception("Invalid answers format");
-}
-
-/* CHECK USER */
-if(!isset($user_id)){
-    throw new Exception("User not authenticated");
-}
-
-/* ================= CREATE ATTEMPT ================= */
-
-$attempt = $conn->prepare("
-INSERT INTO quiz_attempts (user_id,quiz_id,start_time,status)
-VALUES (?,?,NOW(),'in_progress')
-");
-
-$attempt->bind_param("ii",$user_id,$quiz_id);
-
-if(!$attempt->execute()){
-    throw new Exception($attempt->error);
-}
-
-$attempt_id = $conn->insert_id;
+$attempt_id = $_POST['attempt_id'] ?? '';
 
 if(!$attempt_id){
-    throw new Exception("Attempt creation failed");
+    throw new Exception("Attempt ID missing");
 }
 
-/* ================= SAVE USER ANSWERS ================= */
+/* ================= GET QUIZ ID ================= */
 
-foreach($answers as $question_id => $option_ids){
+$qz = $conn->prepare("
+SELECT quiz_id FROM quiz_attempts WHERE id=?
+");
+$qz->bind_param("i",$attempt_id);
+$qz->execute();
 
-    // ensure array (important for single select)
-    if(!is_array($option_ids)){
-        $option_ids = [$option_ids];
-    }
+$qz_res = $qz->get_result()->fetch_assoc();
 
-    foreach($option_ids as $option_id){
-
-        $is_correct = 0;
-        $final_option_id = NULL;
-
-        /* TRUE / FALSE SUPPORT */
-        if($option_id == "true" || $option_id == "false"){
-
-            $check = $conn->prepare("
-            SELECT id,is_correct
-            FROM options
-            WHERE question_id=? AND option_text=?
-            ");
-
-            $check->bind_param("is",$question_id,$option_id);
-            $check->execute();
-
-            $res = $check->get_result()->fetch_assoc();
-
-            if($res){
-                $final_option_id = $res['id'];
-                $is_correct = $res['is_correct'];
-            }
-
-        }else{
-
-            $final_option_id = intval($option_id);
-
-            $check = $conn->prepare("
-            SELECT is_correct
-            FROM options
-            WHERE id=?
-            ");
-
-            $check->bind_param("i",$final_option_id);
-            $check->execute();
-
-            $res = $check->get_result()->fetch_assoc();
-
-            if($res){
-                $is_correct = $res['is_correct'];
-            }
-        }
-
-        /* INSERT ANSWER */
-        $insert = $conn->prepare("
-        INSERT INTO user_answers
-        (attempt_id,question_id,option_id,is_correct)
-        VALUES (?,?,?,?)
-        ");
-
-        $insert->bind_param(
-            "iiii",
-            $attempt_id,
-            $question_id,
-            $final_option_id,
-            $is_correct
-        );
-
-        if(!$insert->execute()){
-            throw new Exception($insert->error);
-        }
-
-    }
+if(!$qz_res){
+    throw new Exception("Invalid attempt");
 }
 
-/* ================= CORRECT SCORING ================= */
+$quiz_id = $qz_res['quiz_id'];
+
+
+/* ================= CALCULATE RESULT ================= */
 
 $correct = 0;
 $wrong = 0;
 $skipped = 0;
 
-/* GET ALL QUESTIONS */
+/* GET ONLY ATTEMPT QUESTIONS (IMPORTANT FIX) */
 
 $q = $conn->prepare("
-SELECT id FROM questions WHERE quiz_id=?
+SELECT question_id FROM attempt_questions WHERE attempt_id=?
 ");
-
-$q->bind_param("i",$quiz_id);
+$q->bind_param("i",$attempt_id);
 $q->execute();
+
 $qres = $q->get_result();
 
 $total_questions = $qres->num_rows;
 
 while($ques = $qres->fetch_assoc()){
 
-    $question_id = $ques['id'];
+    $question_id = $ques['question_id'];
 
     /* CORRECT OPTIONS */
     $correctOpt = [];
@@ -153,6 +63,7 @@ while($ques = $qres->fetch_assoc()){
 
     $c->bind_param("i",$question_id);
     $c->execute();
+
     $cres = $c->get_result();
 
     while($row = $cres->fetch_assoc()){
@@ -169,17 +80,15 @@ while($ques = $qres->fetch_assoc()){
 
     $u->bind_param("ii",$attempt_id,$question_id);
     $u->execute();
+
     $ures = $u->get_result();
 
     while($row = $ures->fetch_assoc()){
         $userOpt[] = $row['option_id'];
     }
 
-    /* SORT FOR EXACT MATCH */
     sort($correctOpt);
     sort($userOpt);
-
-    /* EVALUATION */
 
     if(empty($userOpt)){
         $skipped++;
@@ -191,14 +100,15 @@ while($ques = $qres->fetch_assoc()){
     }else{
         $wrong++;
     }
-
 }
 
-/* PERCENTAGE */
+
+/* ================= PERCENTAGE ================= */
 
 $percentage = ($total_questions > 0)
     ? ($correct/$total_questions)*100
     : 0;
+
 
 /* ================= UPDATE ATTEMPT ================= */
 
@@ -211,10 +121,8 @@ WHERE id=?
 ");
 
 $update->bind_param("ii",$correct,$attempt_id);
+$update->execute();
 
-if(!$update->execute()){
-    throw new Exception($update->error);
-}
 
 /* ================= INSERT RESULT ================= */
 
@@ -233,11 +141,8 @@ $resultInsert->bind_param(
     $percentage
 );
 
-if(!$resultInsert->execute()){
-    throw new Exception($resultInsert->error);
-}
+$resultInsert->execute();
 
-/* ================= COMMIT ================= */
 
 $conn->commit();
 

@@ -3,158 +3,167 @@
 
 <div class="page-wrapper">
 
-   <!-- Breadcrumb -->
-    <div class="page-breadcrumb">
-        <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Quiz</h4>
+	<!-- Breadcrumb -->
+	<div class="page-breadcrumb">
+		<div class="row">
+			<div class="col-12 d-flex align-items-center justify-content-between">
+				<h4 class="page-title">Quiz</h4>
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Quiz</a></li>
-                        <li class="breadcrumb-item active">Update Quiz</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid">
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item">
+							<a href="#">Quiz</a>
+						</li>
+						<li class="breadcrumb-item active">
+							Update Quiz
+						</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
 
-        <form class="form-horizontal" onsubmit="return false">
+	<div class="container-fluid">
 
-            <div class="row">
-                <div class="col-md-12">
+		<form class="form-horizontal" onsubmit="return false">
 
-                    <div class="card mb-4 shadow-sm">
+			<div class="row">
+				<div class="col-md-12">
 
-                        <div class="card-body">
+					<div class="card mb-4 shadow-sm">
 
-                            <h4 class="card-title mb-4">1. Quiz Details</h4>
+						<div class="card-body">
 
-                           
-                            <div class="row mb-3">
+							<h4 class="card-title mb-4">1. Quiz Details</h4>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Quiz Title</label>
-                                    <input type="text"
-                                           class="form-control form-control-sm"
-                                           id="qtitle"
-                                           name='quiz_title'
-                                           placeholder="Quiz Title">
-                                </div>
+							<div class="row mb-3">
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Total Marks</label>
-                                    <input type="number"
-                                           class="form-control form-control-sm"
-                                           id="tmarks"
-                                           name='tmarks'
-                                           placeholder="Total Marks">
-                                </div>
+								<div class="col-md-6">
+									<label class="form-label">Quiz Title</label>
+									<input 
+										type="text"
+										class="form-control form-control-sm"
+										id="qtitle"
+										name="quiz_title"
+										placeholder="Quiz Title"
+									>
+								</div>
 
-                            </div>
+								<div class="col-md-6">
+									<label class="form-label">Total Marks</label>
+									<input 
+										type="number"
+										class="form-control form-control-sm"
+										id="tmarks"
+										name="tmarks"
+										placeholder="Total Marks"
+									>
+								</div>
 
-                    
-                            <div class="row mb-3">
+							</div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Category</label>
+							<div class="row mb-3">
 
-                                    <select class="form-select form-select-sm" id="category" name="category">
-                                        <option value="">Select Category</option>
-                                    </select>
-                                </div>
+								<div class="col-md-6">
+									<label class="form-label">Category</label>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Duration (Minutes)</label>
-                                    <input type="number"
-                                           class="form-control form-control-sm"
-                                           id="duration"
-                                           name='duration'
-                                           placeholder="Duration">
-                                </div>
+									<select class="form-select form-select-sm" id="category" name="category">
+										<option value="">Select Category</option>
+									</select>
+								</div>
 
-                            </div>
+								<div class="col-md-6">
+									<label class="form-label">Duration (Minutes)</label>
+									<input 
+										type="number"
+										class="form-control form-control-sm"
+										id="duration"
+										name="duration"
+										placeholder="Duration"
+									>
+								</div>
 
-                            <div class="row mb-3">
+							</div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Total Questions</label>
-                                    <input type="number"
-                                           class="form-control form-control-sm"
-                                           id="tques"
-                                           name='total_question'
-                                           placeholder="Total Questions">
-                                </div>
+							<div class="row mb-3">
 
-                                <div class="col-md-6">
-                                    <label class="form-label">Attempt Limit</label>
-                                    <input type="number"
-                                           class="form-control form-control-sm"
-                                           id="attempt"
-                                           name="attempt"
-                                           placeholder="Total Attempts">
-                                </div>
+								<div class="col-md-6">
+									<label class="form-label">Total Questions</label>
+									<input 
+										type="number"
+										class="form-control form-control-sm"
+										id="tques"
+										name="total_question"
+										placeholder="Total Questions"
+									>
+								</div>
 
-                            </div>
+							</div>
 
-                            <div class="text-end mt-4">
+							<div class="text-end mt-4">
 
-                                <button type="button"
-                                        class="btn btn-primary btn-sm px-4"
-                                        onclick="updateQuiz()">
-                                    Update Quiz
-                                </button>
+								<button 
+									type="button"
+									class="btn btn-primary btn-sm px-4"
+									onclick="updateQuiz()"
+								>
+									Update Quiz
+								</button>
 
-                                <button type="button"
-                                        class="btn btn-success btn-sm px-4"
-                                        onclick="publishQuiz()">
-                                    Publish Quiz
-                                </button>
+								<button 
+									type="button"
+									class="btn btn-success btn-sm px-4"
+									onclick="publishQuiz()"
+								>
+									Publish Quiz
+								</button>
 
-                            </div>
+							</div>
 
-                        </div>
-                    </div>
+						</div>
 
+					</div>
 
-                    <div class="card">
+					<div class="card">
 
-                        <div class="card-body">
+						<div class="card-body">
 
-                            <div class="d-flex justify-content-between mb-4 border-bottom pb-2">
+							<div class="d-flex justify-content-between mb-4 border-bottom pb-2">
 
-                                <h4>2. Manage Questions</h4>
+								<h4>2. Manage Questions</h4>
 
-                                <button type="button"
-                                        class="btn btn-sm btn-primary"
-                                        id="addQuestion">
-                                    Add Question
-                                </button>
+								<button 
+									type="button"
+									class="btn btn-sm btn-primary"
+									id="addQuestion"
+								>
+									Add Question
+								</button>
 
-                            </div>
+							</div>
 
-                            <div id="questionContainer"></div>
+							<div id="questionContainer"></div>
 
+							<div class="text-end mt-3">
+								<button 
+									type="button"
+									class="btn btn-success"
+									onclick="saveAllQuestions()"
+								>
+									Save All Questions
+								</button>
+							</div>
 
-                            <div class="text-end mt-3">
-                                <button type="button"
-                                        class="btn btn-success"
-                                        onclick="saveAllQuestions()">
-                                    Save All Questions
-                                </button>
-                            </div>
+						</div>
 
-                        </div>
+					</div>
 
-                    </div>
+				</div>
+			</div>
 
-                </div>
-            </div>
+		</form>
 
-        </form>
-
-    </div>
+	</div>
 
 </div>
 
@@ -164,594 +173,564 @@
 
 <script>
 
+	let api_url = "<?php echo $api_url; ?>";
 
+	let params = new URLSearchParams(window.location.search);
 
-let api_url = "<?php echo $api_url; ?>";
+	let quiz_id = params.get("quiz_id") || "<?php echo $_GET['quiz_id'] ?? ''; ?>";
 
-let params = new URLSearchParams(window.location.search);
 
-let quiz_id = params.get("quiz_id") || "<?php echo $_GET['quiz_id'] ?? ''; ?>";
+	$(document).ready(function(){
 
+		if(!quiz_id){
+			alert("Quiz ID missing");
+			return;
+		}
 
-$(document).ready(function(){
+		loadCategories();
+		loadQuiz();
+		loadQuestions();
+		enableDrag();
 
-    if(!quiz_id){
-        alert("Quiz ID missing");
-        return;
-    }
+	});
 
-    loadCategories();
-    loadQuiz();
-    loadQuestions();
-    enableDrag();
 
-});
+	function loadCategories(){
 
+		$.get(api_url + "category/getcategories.php", function(res){
 
-function loadCategories(){
+			if(res.status == "success"){
 
-    $.get(api_url+"category/getcategories.php",function(res){
+				let html = '<option value="">Select Category</option>';
 
-        if(res.status=="success"){
+				res.data.forEach(function(cat){
 
-            let html='<option value="">Select Category</option>';
+					html += `
+						<option value="${cat.id}">
+							${cat.category_name}
+						</option>
+					`;
 
-            res.data.forEach(function(cat){
+				});
 
-                html += `<option value="${cat.id}">
-                            ${cat.category_name}
-                         </option>`;
+				$("#category").html(html);
 
-            });
+			}
 
-            $("#category").html(html);
+		}, "json");
 
-        }
+	}
 
-    },"json");
 
-}
+	/*Load Quiz */
 
-/*= LOAD QUIZ  */
+	function loadQuiz(){
 
-function loadQuiz(){
+		$.get(api_url + "quiz/getquiz.php?quiz_id=" + quiz_id, function(res){
 
-    $.get(api_url+"quiz/getquiz.php?quiz_id="+quiz_id,function(res){
+			if(res.status === "success"){
 
-        if(res.status==="success"){
+				let q = res.quiz;
 
-            let q=res.quiz;
+				$("input[name='quiz_title']").val(q.title);
+				$("input[name='tmarks']").val(q.total_marks);
+				$("input[name='duration']").val(q.duration);
+				$("input[name='total_question']").val(q.total_questions);
+				$("input[name='attempt']").val(q.attempt_limit);
+				$("select[name='category']").val(q.category_id);
 
-            $("input[name='quiz_title']").val(q.title);
-            $("input[name='tmarks']").val(q.total_marks);
-            $("input[name='duration']").val(q.duration);
-            $("input[name='total_question']").val(q.total_questions);
-            $("input[name='attempt']").val(q.attempt_limit);
-            $("select[name='category']").val(q.category_id);
+			}
 
-        }
+		}, "json");
 
-    },"json");
+	}
 
-}
 
+	/*Load Question */
 
-/*  LOAD QUESTIONS*/
+	function loadQuestions(){
 
-function loadQuestions(){
+		$.get(api_url + "question/getquestions.php?quiz_id=" + quiz_id, function(res){
 
-    $.get(api_url+"question/getquestions.php?quiz_id="+quiz_id,function(res){
+			if(res.status !== "success") return;
 
-        if(res.status!=="success") return;
+			$("#questionContainer").html("");
 
-        $("#questionContainer").html("");
+			res.questions.forEach(function(q){
 
-        res.questions.forEach(function(q){
+				let block = addQuestionUI(q);
 
-            let block = addQuestionUI(q);
+				block.find(".optionContainer").html("");
 
-            block.find(".optionContainer").html("");
+				if(q.options){
 
-            if(q.options){
+					q.options.forEach(function(op){
+						addOptionUI(block, q.question_type, op.option_text, op.is_correct);
+					});
 
-                q.options.forEach(function(op){
-                    addOptionUI(block,q.question_type,op.option_text,op.is_correct);
-                });
+				}
 
-            }
+			});
 
-        });
+			updateQuestionNumbers();
 
-        updateQuestionNumbers();
+		}, "json");
 
-    },"json");
+	}
 
-}
 
+	/* Drag */
 
-/*  DRAG */
+	function enableDrag(){
 
-function enableDrag(){
+		$("#questionContainer").sortable({
+			handle: ".dragHandle",
+			update: updateQuestionNumbers
+		});
 
-    $("#questionContainer").sortable({
-        handle:".dragHandle",
-        update:updateQuestionNumbers
-    });
+	}
 
-}
 
+	/* Question Numbering  */
 
-/*  QUESTION NUMBERING */
+	function updateQuestionNumbers(){
 
-function updateQuestionNumbers(){
+		$(".question-block").each(function(i){
+			$(this).find(".qnumber").text("Question " + (i + 1));
+		});
 
-    $(".question-block").each(function(i){
-        $(this).find(".qnumber").text("Question "+(i+1));
-    });
+	}
 
-}
 
+	/* Add Question */
 
-/* ADD QUESTION  */
+	$("#addQuestion").click(function(){
 
-$("#addQuestion").click(function(){
+		addQuestionUI();
+		updateQuestionNumbers();
 
-    addQuestionUI();
+	});
 
-    updateQuestionNumbers();
 
-});
+	/* Question Dyanamic template*/
 
+	function addQuestionUI(data = null){
 
-/*  QUESTION TEMPLATE  */
+		let html = `
 
-function addQuestionUI(data=null){
+		<div class="question-block card mb-2">
 
-let html=`
+			<input type="hidden" class="question_id" value="${data ? data.id : ''}">
 
-<div class="question-block card mb-2">
+			<div class="card-header d-flex justify-content-between">
 
-<input type="hidden" class="question_id" value="${data?data.id:''}">
+				<div>
+					<span class="dragHandle">☰</span>
+					<strong class="qnumber"></strong>
+				</div>
 
-<div class="card-header d-flex justify-content-between">
+				<div>
+					<button type="button" class="btn btn-sm btn-light toggleQ">▼</button>
+					<button type="button" class="btn btn-sm btn-danger removeQuestion">✖</button>
+				</div>
 
-<div>
-<span class="dragHandle">☰</span>
-<strong class="qnumber"></strong>
-</div>
+			</div>
 
-<div>
-<button type="button" class="btn btn-sm btn-light toggleQ">▼</button>
-<button type="button" class="btn btn-sm btn-danger removeQuestion">✖</button>
-</div>
+			<div class="card-body">
 
-</div>
+				<div class="row g-2 mb-2">
 
-<div class="card-body">
+					<div class="col-md-8">
+						<input type="text"
+							class="form-control form-control-sm qtext"
+							value="${data ? data.question_text : ''}"
+							placeholder="Question">
+					</div>
 
-<div class="row g-2 mb-2">
+					<div class="col-md-2">
+						<input type="number"
+							class="form-control form-control-sm qmarks"
+							value="${data ? data.marks : 1}">
+					</div>
 
-<div class="col-md-8">
-<input type="text"
-class="form-control form-control-sm qtext"
-value="${data?data.question_text:''}"
-placeholder="Question">
-</div>
+					<div class="col-md-2">
 
-<div class="col-md-2">
-<input type="number"
-class="form-control form-control-sm qmarks"
-value="${data?data.marks:1}">
-</div>
+						<select class="form-select form-select-sm qtype">
+							<option value="mcq">MCQ</option>
+							<option value="multiselect">Multi Select</option>
+							<option value="truefalse">True False</option>
+						</select>
 
-<div class="col-md-2">
+					</div>
 
-<select class="form-select form-select-sm qtype">
+				</div>
 
-<option value="mcq">MCQ</option>
-<option value="multiselect">Multi Select</option>
-<option value="truefalse">True False</option>
+				<div class="optionContainer"></div>
 
-</select>
+				<div class="mt-2">
+					<button type="button" class="btn btn-sm btn-outline-primary addOption">
+						+ Option
+					</button>
+				</div>
 
-</div>
+			</div>
 
-</div>
+		</div>
 
-<div class="optionContainer"></div>
+		`;
 
-<div class="mt-2">
+		$("#questionContainer").append(html);
 
-<button type="button" class="btn btn-sm btn-outline-primary addOption">
-+ Option
-</button>
+		let block = $("#questionContainer .question-block").last();
 
-</div>
+		if(data){
+			block.find(".qtype").val(data.question_type);
+		}else{
+			block.find(".qtype").trigger("change");
+		}
 
-</div>
+		return block;
 
-</div>
+	}
 
-`;
 
-$("#questionContainer").append(html);
+	/* collapse*/
 
-let block=$("#questionContainer .question-block").last();
+	$(document).on("click", ".toggleQ", function(){
+		$(this).closest(".question-block").find(".card-body").toggle();
+	});
 
-if(data){
-    block.find(".qtype").val(data.question_type);
-}else{
-    block.find(".qtype").trigger("change");
-}
 
-return block;
+	/* Remove Question */
 
-}
+	$(document).on("click", ".removeQuestion", function(){
 
+		$(this).closest(".question-block").remove();
+		updateQuestionNumbers();
 
+	});
 
-/* COLLAPSE */
 
-$(document).on("click",".toggleQ",function(){
+	/* Type Chnages */
 
-$(this).closest(".question-block").find(".card-body").toggle();
+	$(document).on("change", ".qtype", function(){
 
-});
+		let block = $(this).closest(".question-block");
+		let type = $(this).val();
+		let container = block.find(".optionContainer");
 
+		container.html("");
+		block.find(".addOption").show();
 
-/* REMOVE QUESTION */
+		if(type == "truefalse"){
 
-$(document).on("click",".removeQuestion",function(){
+			container.append(optionRow(block, "radio", "True", true));
+			container.append(optionRow(block, "radio", "False", true));
 
-$(this).closest(".question-block").remove();
+			block.find(".addOption").hide();
 
-updateQuestionNumbers();
+		}
 
-});
+		if(type == "mcq"){
 
+			container.append(optionRow(block, "radio", ""));
+			container.append(optionRow(block, "radio", ""));
 
-/* TYPE CHANGE */
+		}
 
-$(document).on("change",".qtype",function(){
+		if(type == "multiselect"){
 
-let block=$(this).closest(".question-block");
+			container.append(optionRow(block, "checkbox", ""));
+			container.append(optionRow(block, "checkbox", ""));
 
-let type=$(this).val();
+		}
 
-let container=block.find(".optionContainer");
+	});
 
-container.html("");
 
-block.find(".addOption").show();
+	/* Option  */
 
-if(type=="truefalse"){
+	function optionRow(block, type, text = "", readonly = false){
 
-container.append(optionRow(block,"radio","True",true));
-container.append(optionRow(block,"radio","False",true));
+		let name = "correct_" + block.index();
+		let ro = readonly ? "readonly" : "";
 
-block.find(".addOption").hide();
+		return `
 
-}
+		<div class="d-flex align-items-center mb-1 option-row" style="gap:6px">
 
-if(type=="mcq"){
+			<input type="${type}" name="${name}" class="correctOption">
 
-container.append(optionRow(block,"radio",""));
-container.append(optionRow(block,"radio",""));
+			<input type="text"
+				class="form-control form-control-sm optionText"
+				style="width:400px"
+				value="${text}" ${ro}
+				placeholder="Option">
 
-}
+			<button type="button"
+				class="btn btn-sm btn-outline-danger removeOption">
+				✖
+			</button>
 
-if(type=="multiselect"){
+		</div>
 
-container.append(optionRow(block,"checkbox",""));
-container.append(optionRow(block,"checkbox",""));
+		`;
 
-}
+	}
 
-});
 
+	/* Add option*/
 
-/* OPTION ROW */
+	$(document).on("click", ".addOption", function(){
 
-function optionRow(block,type,text="",readonly=false){
+		let block = $(this).closest(".question-block");
 
-let name="correct_"+block.index();
+		let type = block.find(".qtype").val() == "multiselect" ? "checkbox" : "radio";
 
-let ro=readonly?"readonly":"";
+		block.find(".optionContainer").append(optionRow(block, type));
 
-return `
+	});
 
-<div class="d-flex align-items-center mb-1 option-row" style="gap:6px">
 
-<input type="${type}" name="${name}" class="correctOption">
+	/* Remove option*/
 
-<input type="text"
-class="form-control form-control-sm optionText"
-style="width:400px"
-value="${text}" ${ro}
-placeholder="Option">
+	$(document).on("click", ".removeOption", function(){
 
-<button type="button"
-class="btn btn-sm btn-outline-danger removeOption">
-✖
-</button>
+		let container = $(this).closest(".optionContainer");
 
-</div>
+		if(container.find(".option-row").length <= 2){
+			alert("Minimum 2 options required");
+			return;
+		}
 
-`;
+		$(this).closest(".option-row").remove();
 
-}
+	});
 
 
-/* ADD OPTION */
+	/* load Existing option */
 
-$(document).on("click",".addOption",function(){
+	function addOptionUI(block, type, text, correct){
 
-let block=$(this).closest(".question-block");
+		let inputType = type == "multiselect" ? "checkbox" : "radio";
 
-let type=block.find(".qtype").val()=="multiselect"?"checkbox":"radio";
+		let row = $(optionRow(block, inputType, text));
 
-block.find(".optionContainer").append(optionRow(block,type));
+		if(correct == 1){
+			row.find(".correctOption").prop("checked", true);
+		}
 
-});
+		block.find(".optionContainer").append(row);
 
+	}
 
-/* REMOVE OPTION */
 
-$(document).on("click",".removeOption",function(){
+	/* Save Question */
 
-let container=$(this).closest(".optionContainer");
+	function saveAllQuestions(){
 
-if(container.find(".option-row").length<=2){
-alert("Minimum 2 options required");
-return;
-}
+		let allQuestions = [];
+		let isValid = true;
 
-$(this).closest(".option-row").remove();
+		$(".question-block").each(function(){
 
-});
+			let block = $(this);
 
+			let question_id = block.find(".question_id").val();
+			let question_text = block.find(".qtext").val().trim();
+			let marks = block.find(".qmarks").val();
+			let type = block.find(".qtype").val();
 
-/* LOAD EXISTING OPTION */
+			if(question_text === ""){
+				alert("Question text cannot be empty");
+				isValid = false;
+				return false;
+			}
 
-function addOptionUI(block,type,text,correct){
+			let options = [];
 
-let inputType=type=="multiselect"?"checkbox":"radio";
+			block.find(".option-row").each(function(){
 
-let row=$(optionRow(block,inputType,text));
+				let text = $(this).find(".optionText").val().trim();
+				let correct = $(this).find(".correctOption").prop("checked") ? 1 : 0;
 
-if(correct==1){
-row.find(".correctOption").prop("checked",true);
-}
+				if(text !== ""){
+					options.push({
+						option_text: text,
+						is_correct: correct
+					});
+				}
 
-block.find(".optionContainer").append(row);
+			});
 
-}
+			if(options.length < 2){
+				alert("Each question must have at least 2 options");
+				isValid = false;
+				return false;
+			}
 
+			let correctCount = options.filter(op => op.is_correct === 1).length;
 
-/* SAVE QUESTION */
+			if(correctCount === 0){
+				alert("Each question must have at least one correct answer");
+				isValid = false;
+				return false;
+			}
 
-function saveAllQuestions(){
+			allQuestions.push({
+				quiz_id: quiz_id,
+				question_id: question_id,
+				question_text: question_text,
+				marks: marks,
+				question_type: type,
+				options: options
+			});
 
-    let allQuestions = [];
+		});
 
-    let isValid = true;
+		if(!isValid) return;
 
-    $(".question-block").each(function(){
+		$.ajax({
 
-        let block = $(this);
+			url: api_url + "question/savequestion.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({questions: allQuestions}),
+			dataType: "json",
 
-        let question_id = block.find(".question_id").val();
-        let question_text = block.find(".qtext").val().trim();
-        let marks = block.find(".qmarks").val();
-        let type = block.find(".qtype").val();
+			success: function(res){
 
-        if(question_text === ""){
-            alert("Question text cannot be empty");
-            isValid = false;
-            return false;
-        }
+				if(res.status === "success"){
+					alert("All questions saved successfully");
+					loadQuestions();
+				}else{
+					alert(res.message);
+				}
 
-        let options = [];
+			},
 
-        block.find(".option-row").each(function(){
+			error: function(){
+				alert("Server error while saving questions");
+			}
 
-            let text = $(this).find(".optionText").val().trim();
-            let correct = $(this).find(".correctOption").prop("checked") ? 1 : 0;
+		});
 
-            if(text !== ""){
-                options.push({
-                    option_text: text,
-                    is_correct: correct
-                });
-            }
+	}
 
-        });
 
-        if(options.length < 2){
-            alert("Each question must have at least 2 options");
-            isValid = false;
-            return false;
-        }
+	/* Update Quiz */
 
-        let correctCount = options.filter(op => op.is_correct === 1).length;
+	function updateQuiz(){
 
-        if(correctCount === 0){
-            alert("Each question must have at least one correct answer");
-            isValid = false;
-            return false;
-        }
+		let data = {
+			quiz_id: quiz_id,
+			title: $("input[name='quiz_title']").val(),
+			total_marks: $("input[name='tmarks']").val(),
+			duration: $("input[name='duration']").val(),
+			total_questions: $("input[name='total_question']").val(),
+			attempt_limit: $("input[name='attempt']").val(),
+			category_id: $("select[name='category']").val()
+		};
 
-        allQuestions.push({
-            quiz_id: quiz_id,
-            question_id: question_id,
-            question_text: question_text,
-            marks: marks,
-            question_type: type,
-            options: options
-        });
+		$.ajax({
 
-    });
+			url: api_url + "quiz/updatequiz.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(data),
+			dataType: "json",
 
-    if(!isValid) return;
+			success: function(res){
 
-    $.ajax({
+				if(res.status == "success"){
+					alert("Quiz Updated");
+				}else{
+					alert(res.message);
+				}
 
-        url: api_url + "question/savequestion.php",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({questions: allQuestions}),
-        dataType: "json",
+			}
 
-        success: function(res){
+		});
 
-            if(res.status === "success"){
-                alert("All questions saved successfully");
+	}
 
-                loadQuestions();
-            }else{
-                alert(res.message);
-            }
 
-        },
+	/* Publish Quiz */
 
-        error: function(){
-            alert("Server error while saving questions");
-        }
+	function publishQuiz(){
 
-    });
+		let requiredQuestions = parseInt($("input[name='total_question']").val());
 
-}
+		$.get(api_url + "question/getquestions.php?quiz_id=" + quiz_id, function(res){
 
+			if(res.status != "success"){
+				alert("Unable to verify questions");
+				return;
+			}
 
-/* UPDATE QUIZ */
+			let currentQuestions = parseInt(res.questions.length);
 
-function updateQuiz(){
+			if(currentQuestions < requiredQuestions){
 
-let data={
+				alert("You must add " + requiredQuestions + " questions before publishing.\nCurrently added: " + currentQuestions);
+				return;
 
-quiz_id:quiz_id,
-title:$("input[name='quiz_title']").val(),
-total_marks:$("input[name='tmarks']").val(),
-duration:$("input[name='duration']").val(),
-total_questions:$("input[name='total_question']").val(),
-attempt_limit:$("input[name='attempt']").val(),
-category_id:$("select[name='category']").val()
+			}
 
-};
+			let invalidQuestion = false;
 
-$.ajax({
+			res.questions.forEach(function(q){
 
-url:api_url+"quiz/updatequiz.php",
-type:"POST",
-contentType:"application/json",
-data:JSON.stringify(data),
-dataType:"json",
+				if(!q.options || q.options.length < 2){
+					invalidQuestion = true;
+				}
 
-success:function(res){
+				let correctCount = 0;
 
-if(res.status=="success"){
-alert("Quiz Updated");
-}else{
-alert(res.message);
-}
+				q.options.forEach(function(op){
+					if(op.is_correct == 1) correctCount++;
+				});
 
-}
+				if(correctCount == 0){
+					invalidQuestion = true;
+				}
 
-});
+			});
 
-}
+			if(invalidQuestion){
 
+				alert("Each question must have at least 2 options and one correct answer");
+				return;
 
-/* PUBLISH QUIZ */
+			}
 
-function publishQuiz(){
+			$.ajax({
 
-let requiredQuestions = parseInt($("input[name='total_question']").val());
+				url: api_url + "quiz/publishquiz.php",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify({quiz_id: quiz_id}),
+				dataType: "json",
 
-$.get(api_url+"question/getquestions.php?quiz_id="+quiz_id,function(res){
+				success: function(res){
 
-if(res.status!="success"){
-alert("Unable to verify questions");
-return;
-}
+					if(res.status == "success"){
+						alert("Quiz Published Successfully");
+						location.reload();
+					}else{
+						alert(res.message);
+					}
 
-let currentQuestions = parseInt(res.questions.length);
+				},
 
+				error: function(){
+					alert("Server error while publishing quiz");
+				}
 
+			});
 
-if(currentQuestions < requiredQuestions){
+		}, "json");
 
-alert("You must add "+requiredQuestions+" questions before publishing.\nCurrently added: "+currentQuestions);
-
-return;
-
-}
-
-
-
-let invalidQuestion=false;
-
-res.questions.forEach(function(q){
-
-if(!q.options || q.options.length < 2){
-invalidQuestion=true;
-}
-
-let correctCount=0;
-
-q.options.forEach(function(op){
-if(op.is_correct==1) correctCount++;
-});
-
-if(correctCount==0){
-invalidQuestion=true;
-}
-
-});
-
-if(invalidQuestion){
-
-alert("Each question must have at least 2 options and one correct answer");
-
-return;
-
-}
-
-
-/* CALL PUBLISH API */
-
-$.ajax({
-
-url:api_url+"quiz/publishquiz.php",
-type:"POST",
-contentType:"application/json",
-data:JSON.stringify({quiz_id:quiz_id}),
-dataType:"json",
-
-success:function(res){
-
-if(res.status=="success"){
-
-alert("Quiz Published Successfully");
-
-location.reload();
-
-}else{
-
-alert(res.message);
-
-}
-
-},
-
-error:function(){
-alert("Server error while publishing quiz");
-}
-
-});
-
-},"json");
-
-}
+	}
 
 </script>

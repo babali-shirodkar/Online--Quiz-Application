@@ -37,6 +37,12 @@ $role = $_SESSION['role'] ?? '';
         <span class="hide-menu">Instructor</span>
     </a>
 </li>
+<li class="sidebar-item">
+    <a href="<?php echo $site_url; ?>pages/admin/manageuser.php" class="sidebar-link">
+        <i class="mdi mdi-face"></i>
+        <span class="hide-menu">Participant</span>
+    </a>
+</li>
 
 
 
@@ -53,6 +59,12 @@ $role = $_SESSION['role'] ?? '';
     </a>
 </li>
 
+<li class="sidebar-item">
+    <a class="sidebar-link" href="<?php echo $site_url; ?>pages/admin/myattempts.php">
+        <i class="mdi mdi-receipt"></i>
+        <span class="hide-menu">Attempted Quizzes</span>
+    </a>
+</li>
 <?php endif; ?>
 
 

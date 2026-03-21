@@ -19,7 +19,6 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-
 $stmt = $conn->prepare("SELECT user_id, name, email, password, role, status FROM users WHERE email=?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -36,7 +35,6 @@ if (!$user || !password_verify($password, $user['password'])) {
     exit;
 }
 
-
 if ($user['status'] !== 'active') {
     echo json_encode([
         "status" => "error",
@@ -45,17 +43,12 @@ if ($user['status'] !== 'active') {
     exit;
 }
 
-
-
-
 session_start();
 
 $_SESSION['user_id'] = $user['user_id'];
 $_SESSION['role'] = $user['role'];
 $_SESSION['name'] = $user['name'];
 $_SESSION['email'] = $user['email'];
-
-
 
 unset($user['password']);
 

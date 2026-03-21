@@ -1,240 +1,354 @@
-
-
 <?php include("includes/header.php"); ?>
 <?php include("includes/sidebar.php"); ?>
 
 <div class="page-wrapper">
 
-<!-- Breadcrumb -->
-    <div class="page-breadcrumb">
-        <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Quiz</h4>
+	<!-- Breadcrumb -->
+	<div class="page-breadcrumb">
+		<div class="row">
+			<div class="col-12 d-flex align-items-center justify-content-between">
+				<h4 class="page-title">Quiz</h4>
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Quiz</a></li>
-                        <li class="breadcrumb-item active">Manage Quiz</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item">
+							<a href="#">Quiz</a>
+						</li>
+						<li class="breadcrumb-item active">
+							Manage Quiz
+						</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
 
-<div class="container-fluid">
+	<div class="container-fluid">
 
-<div class="card shadow-sm">
+		<div class="card shadow-sm">
 
-<div class="card-body">
+			<div class="card-body">
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+				<div class="d-flex justify-content-between align-items-center mb-3">
 
-<h5 class="card-title mb-0">Manage Quizzes</h5>
+					<h5 class="card-title mb-0">Manage Quizzes</h5>
 
-<a href="createquiz.php" class="btn btn-primary btn-sm">
-<i class="mdi mdi-plus"></i> Add New Quiz
-</a>
+					<a href="createquiz.php" class="btn btn-primary btn-sm">
+						<i class="mdi mdi-plus"></i> Add New Quiz
+					</a>
 
-</div>
+				</div>
 
+				<div class="row mb-3">
 
-<div class="row mb-3">
+					<div class="col-md-4">
+						<input 
+							type="text" 
+							id="quizSearch" 
+							class="form-control form-control-sm" 
+							placeholder="Search quiz"
+						>
+					</div>
 
-<div class="col-md-4">
-<input type="text" id="quizSearch" class="form-control form-control-sm" placeholder="Search quiz">
-</div>
+					<div class="col-md-3">
+						<select id="categoryFilter" class="form-control form-control-sm">
+							<option value="">All Categories</option>
+						</select>
+					</div>
 
-<div class="col-md-3">
-<select id="categoryFilter" class="form-control form-control-sm">
-<option value="">All Categories</option>
-</select>
-</div>
+					<div class="col-md-3" id="createdByFilterBox">
+						<select id="instructorFilter" class="form-control form-control-sm">
+							<option value="">Created By</option>
+						</select>
+					</div>
 
-</div>
+					<div class="col-md-2">
+						<button onclick="resetFilters()" class="btn btn-secoundary btn-sm">
+							<i class="mdi mdi-refresh"></i> Reset
+						</button>
+					</div>
 
+				</div>
 
-<div class="table-responsive">
+				<div class="table-responsive">
 
-<table id="quizTable" class="table table-striped table-bordered table-sm">
+					<table id="quizTable" class="table table-striped table-bordered table-sm">
 
-<thead class="thead-light">
+						<thead class="thead-light">
 
-<tr>
-<th>Quiz Name</th>
-<th>Category</th>
-<th>Duration</th>
-<th>Questions</th>
-<th>Marks</th>
-<th>Status</th>
-<th class="text-center">Action</th>
-</tr>
+							<tr>
+								<th>Quiz Name</th>
+								<th id="createdByHeader">Created By</th>
+								<th>Category</th>
+								<th>Duration</th>
+								<th>Questions</th>
+								<th>Marks</th>
+								<th>Status</th>
+								<th class="text-center">Action</th>
+							</tr>
 
-</thead>
+						</thead>
 
-<tbody id="quizBody"></tbody>
+						<tbody id="quizBody"></tbody>
 
-</table>
+					</table>
 
-</div>
+				</div>
 
-</div>
+			</div>
 
-</div>
+		</div>
 
-</div>
+	</div>
 
 </div>
 
 <?php include("includes/footer.php"); ?>
 
-
-
 <script>
 
-var api_url = "<?php echo $api_url; ?>";
+	var api_url = "<?php echo $api_url; ?>";
+	var user_role = "<?php echo $_SESSION['role'] ?? ''; ?>";
 
-$(document).ready(function(){
+	$(document).ready(function(){
 
-loadCategories();
-loadQuizzes();
+		if(user_role === "instructor"){
+			$("#createdByHeader").hide();
+			$("#createdByFilterBox").hide();
+		}
 
-});
+		loadCategories();
+		loadQuizzes();
 
+	});
 
-function loadQuizzes(){
 
-$.get(api_url+"quiz/getallquiz.php",function(res){
+	function loadQuizzes(){
 
-if(res.status!="success") return;
+		$.get(api_url + "quiz/getallquiz.php", function(res){
 
-let html="";
+			if(res.status != "success") return;
 
-res.data.forEach(function(q){
+			loadInstructorFilter(res.data);
 
-let statusBadge="";
+			let html = "";
 
-if(q.status=="published"){
-statusBadge='<span class="badge bg-success status-badge">Published</span>';
-}else{
-statusBadge='<span class="badge bg-warning status-badge">Draft</span>';
-}
+			res.data.forEach(function(q){
 
-html+=`
+				let statusBadge = "";
 
-<tr data-category="${q.category}">
+				if(q.status == "published"){
+					statusBadge = '<span class="badge bg-success">Published</span>';
+				}
+				else if(q.status == "deleted"){
+					statusBadge = '<span class="badge bg-danger">Deleted</span>';
+				}
+				else{
+					statusBadge = '<span class="badge bg-warning">Draft</span>';
+				}
 
-<td class="quiz-title">${q.title}</td>
+				/* ACTION BUTTONS */
 
-<td>${q.category}</td>
+				let actionBtns = "";
 
-<td>${q.duration} min</td>
+				if(q.status === "draft"){
 
-<td>${q.total_questions}</td>
+					actionBtns = `
+						<a href="editquiz.php?quiz_id=${q.quiz_id}">
+							<i class="mdi mdi-pencil text-primary"></i>
+						</a>
 
-<td>${q.total_marks}</td>
+						<a href="#" onclick="deleteQuiz(${q.quiz_id})">
+							<i class="mdi mdi-delete text-danger"></i>
+						</a>
+					`;
 
-<td>${statusBadge}</td>
+				}
+				else if(q.status === "published"){
 
-<td class="text-center action-icons">
+					actionBtns = `
+						<a href="#" onclick="deleteQuiz(${q.quiz_id})">
+							<i class="mdi mdi-delete text-danger"></i>
+						</a>
+					`;
 
-<a href="editquiz.php?quiz_id=${q.quiz_id}" title="Edit Quiz">
-<i class="mdi mdi-pencil text-primary"></i>
-</a>
+				}
+				else{
+					actionBtns = `<span class="text-muted small">No actions</span>`;
+				}
 
-<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete Quiz">
-<i class="mdi mdi-delete text-danger"></i>
-</a>
+				/* ROW */
 
-</td>
+				let createdByColumn = "";
 
-</tr>
+				if(user_role === "admin"){
+					createdByColumn = `<td>${q.instructor_name ?? '-'}</td>`;
+				}
 
-`;
+				html += `
 
-});
+				<tr 
+					data-category="${q.category}" 
+					data-instructor="${q.created_by}">
 
-$("#quizBody").html(html);
+					<td>${q.title}</td>
+					${createdByColumn}
 
-$('#quizTable').DataTable({
-pageLength:10,
-lengthChange:false
-});
+					<td>${q.category}</td>
+					<td>${q.duration} min</td>
+					<td>${q.total_questions}</td>
+					<td>${q.total_marks}</td>
+					<td>${statusBadge}</td>
 
-},"json");
+					<td class="text-center">
+						${actionBtns}
+					</td>
 
-}
+				</tr>
 
+				`;
 
+			});
 
-function loadCategories(){
+			$("#quizBody").html(html);
 
-$.get(api_url+"category/getcategories.php",function(res){
+			/* DATATABLE */
 
-if(res.status!="success") return;
+			$('#quizTable').DataTable({
+				pageLength: 5,
+				lengthChange: false,
+				destroy: true,
+				paging: true,
+				searching: false,
+				info: true,
+				ordering: true,
+				dom: 'tip'
+			});
 
-let html='<option value="">All Categories</option>';
+		}, "json");
 
-res.data.forEach(function(cat){
+	}
 
-html+=`<option value="${cat.category_name}">${cat.category_name}</option>`;
 
-});
 
-$("#categoryFilter").html(html);
+	function loadCategories(){
 
-},"json");
+		$.get(api_url + "category/getcategories.php", function(res){
 
-}
+			if(res.status != "success") return;
 
+			let html = '<option value="">All Categories</option>';
 
+			res.data.forEach(function(cat){
+				html += `<option value="${cat.category_name}">${cat.category_name}</option>`;
+			});
 
-$("#categoryFilter").on("change",function(){
+			$("#categoryFilter").html(html);
 
-let category=$(this).val();
+		}, "json");
 
-$("#quizTable tbody tr").each(function(){
+	}
 
-if(category=="" || $(this).data("category")==category){
-$(this).show();
-}else{
-$(this).hide();
-}
 
-});
+	/* Instructor filter  */
 
-});
+	function loadInstructorFilter(data){
 
+		let unique = {};
 
+		data.forEach(q => {
+			if(q.created_by){
+				unique[q.created_by] = q.instructor_name;
+			}
+		});
 
-function publishQuiz(id){
+		let html = '<option value="">Created By</option>';
 
-if(!confirm("Publish this quiz?")) return;
+		Object.keys(unique).forEach(id => {
+			html += `<option value="${id}">${unique[id]}</option>`;
+		});
 
-$.post(api_url+"quiz/publishquiz.php",{quiz_id:id},function(res){
+		$("#instructorFilter").html(html);
 
-if(res.status=="success"){
-alert("Quiz published successfully");
-location.reload();
-}
+	}
 
-},"json");
 
-}
+	function applyFilters(){
 
+		let category = $("#categoryFilter").val();
+		let instructor = $("#instructorFilter").val();
+		let search = $("#quizSearch").val().toLowerCase();
 
-function deleteQuiz(id){
+		$("#quizTable tbody tr").each(function(){
 
-if(!confirm("Delete this quiz?")) return;
+			let rowCategory = $(this).data("category");
+			let rowInstructor = $(this).data("instructor");
+			let rowText = $(this).text().toLowerCase();
 
-$.post(api_url+"quiz/deletequiz.php",{id:id},function(res){
+			let matchCategory = (category == "" || rowCategory == category);
+			let matchInstructor = (instructor == "" || rowInstructor == instructor);
+			let matchSearch = (search == "" || rowText.includes(search));
 
-if(res.status=="success"){
-alert("Quiz deleted successfully");
-location.reload();
-}
+			if(matchCategory && matchInstructor && matchSearch){
+				$(this).show();
+			}else{
+				$(this).hide();
+			}
 
-},"json");
+		});
 
-}
+	}
+
+
+	$("#categoryFilter").on("change", applyFilters);
+	$("#instructorFilter").on("change", applyFilters);
+	$("#quizSearch").on("keyup", applyFilters);
+
+
+	function resetFilters(){
+
+		$("#quizSearch").val("");
+		$("#categoryFilter").val("");
+		$("#instructorFilter").val("");
+
+		applyFilters();
+
+	}
+
+
+	/* publish quiz */
+
+	function publishQuiz(id){
+
+		if(!confirm("Publish this quiz?")) return;
+
+		$.post(api_url + "quiz/publishquiz.php", {quiz_id: id}, function(res){
+
+			if(res.status == "success"){
+				alert("Quiz published successfully");
+				location.reload();
+			}
+
+		}, "json");
+
+	}
+
+
+	function deleteQuiz(id){
+
+		if(!confirm("Delete this quiz?")) return;
+
+		$.post(api_url + "quiz/deletequiz.php", {quiz_id: id}, function(res){
+
+			if(res.status == "success"){
+				alert("Quiz deleted successfully");
+				location.reload();
+			}else{
+				alert(res.message);
+			}
+
+		}, "json");
+
+	}
 
 </script>

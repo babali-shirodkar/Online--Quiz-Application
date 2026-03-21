@@ -32,5 +32,21 @@
    
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
-  </body>
+<script id="fixToggleScript">
+$(document).ready(function(){
+
+
+    $(".nav-toggler").on("click", function(){
+        $("#main-wrapper").toggleClass("show-sidebar");
+    });
+
+    
+    $(".sidebartoggler").on("click", function(){
+        $("#main-wrapper").toggleClass("mini-sidebar");
+    });
+
+});
+</script>
+
+</body>
 </html>

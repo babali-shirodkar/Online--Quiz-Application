@@ -1,5 +1,5 @@
 <?php
-$quiz_id = $_GET['quiz_id'];
+	$quiz_id = $_GET['quiz_id'] ?? '';
 ?>
 
 <?php include("includes/header.php"); ?>
@@ -7,132 +7,186 @@ $quiz_id = $_GET['quiz_id'];
 
 <div class="page-wrapper">
 
-<!-- Breadcrumb -->
-<div class="page-breadcrumb">
-        <div class="row">
-            <div class="col-12 d-flex align-items-center justify-content-between">
-                <h4 class="page-title">Quiz</h4>
+	<!-- Breadcrumb -->
+	<div class="page-breadcrumb">
+		<div class="row">
+			<div class="col-12 d-flex align-items-center justify-content-between">
+				<h4 class="page-title">Quiz</h4>
 
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Quiz</a></li>
-                        <li class="breadcrumb-item active">startquiz Quiz</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
+				<nav aria-label="breadcrumb">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="#">Quiz</a></li>
+						<li class="breadcrumb-item active">Start Quiz</li>
+					</ol>
+				</nav>
+			</div>
+		</div>
+	</div>
 
-<div class="container-fluid">
+	<div class="container-fluid">
 
-<div class="row justify-content-center">
+		<div class="row justify-content-center">
 
-<div class="col-md-8">
+			<div class="col-md-8">
 
-<div class="card instruction-card">
+				<div class="card instruction-card shadow-sm">
 
-<div class="card-body">
-<div class="card-body">
+                    <div class="card-body p-4">
 
-<div class="quiz-header mb-4">
+                        <!-- QUIZ HEADER -->
+                        <div class="quiz-header text-center mb-4">
 
-<h3 class="quiz-title">Online Assessment</h3>
+                          <h3 class="quiz-title" id="quizTitle">Loading...</h3>
 
-<div class="quiz-meta">
+                            <div class="quiz-meta">
+                                <span><i class="mdi mdi-clock-outline"></i> 
+                                    <span id="quizDuration">0</span> Minutes
+                                </span>
 
-<span><i class="mdi mdi-clock-outline"></i> 30 Minutes</span>
+                                <span><i class="mdi mdi-help-circle"></i> 
+                                    <span id="quizQuestions">0</span> Questions
+                                </span>
 
-<span><i class="mdi mdi-help-circle"></i> 20 Questions</span>
+                                <span><i class="mdi mdi-star"></i> 
+                                    <span id="quizMarks">0</span> Marks
+                                </span>
+                            </div>
 
-<span><i class="mdi mdi-star"></i> 40 Marks</span>
+                        </div>
 
-</div>
+                        <!-- INSTRUCTIONS -->
+                        <div class="instruction-section">
 
-</div>
+                            <h5 class="section-title">
+                                <i class="mdi mdi-information-outline"></i> Instructions
+                            </h5>
 
-<hr>
+                            <ul class="instruction-list">
+                                <li>Timer starts immediately after clicking start</li>
+                                <li>Each question has equal marks</li>
+                                <li>Do not refresh or close the browser</li>
+                                <li>Submit before time expires</li>
+                                <li>Use navigation to move between questions</li>
+                            </ul>
 
+                        </div>
 
-<h4 class="section-title">
-<i class="mdi mdi-information-outline"></i>
-General Instructions
-</h4>
+                        <!-- DECLARATION -->
+                        <div class="declaration-card mt-4">
 
-<ul class="instruction-list">
+                            <label class="d-flex align-items-start gap-2">
 
-<li>Timer will start once you click Start Quiz.</li>
+                                <input type="checkbox" id="declaration">
 
-<li>Each question carries equal marks.</li>
+                                <span>
+                                    I have read all instructions and agree to follow the rules.
+                                </span>
 
-<li>Do not refresh or close the browser.</li>
+                            </label>
 
-<li>Click Submit before time expires.</li>
+                        </div>
 
-<li>Use navigation buttons to move between questions.</li>
+                        <!-- BUTTON -->
+                        <div class="text-center mt-4">
 
-</ul>
+                            <button class="btn btn-primary px-4" id="startBtn">
+                                <i class="mdi mdi-play-circle-outline"></i> Start Quiz
+                            </button>
 
-<h4 class="section-title">
-<i class="mdi mdi-file-document-outline"></i>
-Declaration
-</h4>
+                        </div>
 
-<div class="declaration-box">
+                    </div>
+                    </div>
 
-<input type="checkbox" id="declaration">
+			</div>
 
-<label>
+		</div>
 
-I confirm that I have read all instructions and will follow the rules.
-
-</label>
-
-</div>
-
-
-<div class="text-end mt-4">
-
-<button class="btn btn-success"
-onclick="startQuiz()">
-
-Start Test
-
-</button>
-
-</div>
-
-</div>
-</div>
-
-</div>
-
-</div>
-
-</div>
+	</div>
 
 </div>
 
 <?php include("includes/footer.php"); ?>
 
-
 <script>
 
-function startQuiz(){
+	let quiz_id = "<?php echo $quiz_id; ?>";
+	let api_url = "<?php echo $api_url; ?>";
 
-let check = document.getElementById("declaration").checked;
+    $(document).ready(function(){
+        loadQuizDetails();
+    });
 
-if(!check){
 
-alert("Please accept the declaration");
+    function loadQuizDetails(){
 
-return;
+        $.get(api_url + "quiz/getquizdetails.php", {
+            quiz_id: quiz_id
+        }, function(res){
 
-}
+            if(res.status !== "success"){
+                alert(res.message);
+                return;
+            }
 
-window.location.href="quizpage.php?quiz_id=<?php echo $quiz_id; ?>";
+            let q = res.data;
 
-}
+            $("#quizTitle").text(q.title);
+            $("#quizDuration").text(q.duration);
+            $("#quizQuestions").text(q.total_questions);
+            $("#quizMarks").text(q.total_marks);
+
+        }, "json");
+
+    }
+
+	/* START QUIZ */
+
+    $("#startBtn").prop("disabled", true);
+
+    $("#declaration").on("change", function(){
+        $("#startBtn").prop("disabled", !this.checked);
+    });
+
+	$("#startBtn").click(function(){
+
+		if(!quiz_id){
+			alert("Invalid Quiz ID");
+			return;
+		}
+
+		if(!$("#declaration").is(":checked")){
+			alert("Please accept the declaration before starting the quiz.");
+			return;
+		}
+
+
+		$.post(api_url + "quiz/startquiz.php", {
+			quiz_id: quiz_id
+		}, function(res){
+
+			if(res.status == "success"){
+
+				window.location.href = "quizpage.php?attempt_id=" + res.attempt_id;
+
+			}else{
+
+				alert(res.message || "Something went wrong");
+
+				$("#startBtn").prop("disabled", false).text("Start Test");
+			}
+
+		}, "json").fail(function(){
+
+			alert("Server error. Please try again.");
+
+			$("#startBtn").prop("disabled", false).text("Start Test");
+		});
+
+	});
+
+
+
+
 
 </script>
-
-
