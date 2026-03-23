@@ -20,7 +20,7 @@ $conn->begin_transaction();
 
 try{
 
-/* ================= CREATE ATTEMPT ================= */
+/*  CREATE ATTEMPT  */
 
 $attempt = $conn->prepare("
 INSERT INTO quiz_attempts (user_id, quiz_id, start_time, status)
@@ -36,7 +36,7 @@ if(!$attempt_id){
     throw new Exception("Attempt not created");
 }
 
-/* ================= GET TOTAL QUESTIONS ================= */
+/*  GET TOTAL QUESTIONS  */
 
 $qz = $conn->prepare("
 SELECT total_questions FROM quizzes WHERE quiz_id=?
@@ -47,7 +47,7 @@ $qz->execute();
 $qz_res = $qz->get_result()->fetch_assoc();
 $total_limit = $qz_res['total_questions'] ?? 0;
 
-/* ================= GET RANDOM QUESTIONS ================= */
+/*  GET RANDOM QUESTIONS  */
 
 $q = $conn->prepare("
 SELECT id FROM questions

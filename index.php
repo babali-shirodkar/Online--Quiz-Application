@@ -1,17 +1,30 @@
+<?php 
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+require 'PHPMailer/src/Exception.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Online Quiz Application</title>
-
-    <link rel="icon" type="image/png" sizes="16x16" href="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/assets/images/favicon.png"/>
-    <link href="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/dist/css/style.min.css" rel="stylesheet"/>
-    
-   
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="keywords" content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Matrix lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Matrix admin lite design, Matrix admin lite dashboard bootstrap 5 dashboard template" />
+    <meta name="description" content="Matrix Admin Lite Free Version is powerful and clean admin dashboard template, inpired from Bootstrap Framework" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Quiz & Assessment Application</title>
+    <!-- Favicon icon -->
+   <link rel="icon" type="image/png" sizes="16x16" href="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/assets/images/favicon.png"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
+    <link href="assets/extra-libs/calendar/calendar.css" rel="stylesheet" />
+    <link href="dist/css/style.min.css" rel="stylesheet" />
+     <link href="dist/css/customstyle.css" rel="stylesheet" />
 
     <style>
         
@@ -35,7 +48,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-md navbar-light px-0">
                 <a class="navbar-brand" href="#">
-                    <img src="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/assets/images/logo-icon.png" alt="logo"/>
+                    <img src="assets/images/logo-icon.png" alt="logo"/>
                     <span class="ml-2 font-weight-bold">QuizApp</span>
                 </a>
 
@@ -50,7 +63,7 @@
                         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                         <li class="nav-item ms-3">
-                            <a href="login.php" class="btn btn-info text-white">Login</a>
+                            <a href="login.php" class="btn btn-theme">Login</a>
                         </li>
                     </ul>
                 </div>
@@ -65,36 +78,25 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="mb-3">
-                        <span class="badge bg-white text-muted border mr-2"><i class="fas fa-check-circle mr-1"></i> Secure</span>
-                        <span class="badge bg-white text-muted border mr-2"><i class="fas fa-bolt mr-1"></i> Fast</span>
-                        <span class="badge bg-white text-muted border"><i class="fas fa-clock mr-1"></i> Real-time</span>
+                       <span class=" badge bg-white text-muted border mr-2 icon-green"><i class="fas fa-check-circle mr-1"></i> Secure</span>
+                        <span class="badge bg-white text-muted border mr-2 icon-orange"><i class="fas fa-bolt mr-1"></i> Fast</span>
+                        <span class="badge bg-white text-muted border mr-2 icon-blue"><i class="fas fa-clock mr-1"></i> Real-time</span>
                     </div>
 
                     <h1 class="text-dark font-weight-bold mb-3 display-4">
-                        Online Quiz & <br>Assessment System
+                            Smart Online Quiz <br> & Assessment Platform
                     </h1>
 
-                    <p class="font-16 text-muted mb-4">
-                        Attempt quizzes online and get your results instantly. 
-                        Our platform allows participants to test their knowledge 
-                        through timed quizzes with automatic evaluation.
-                    </p>
+                        <p class="font-16 text-muted mb-4">
+                            Practice, test, and improve your skills with real-time assessments. 
+                            Get instant results, track performance, and grow faster with our 
+                            powerful and easy-to-use quiz system.
+                        </p>
 
-                    <!-- Stats Row -->
-                    <div class="row">
-                        <div class="col-3">
-                            <h4 class="font-weight-bold text-dark">10k+</h4>
-                            <small class="text-muted">Users</small>
-                        </div>
-                        <div class="col-3">
-                            <h4 class="font-weight-bold text-dark">50k+</h4>
-                            <small class="text-muted">Quizzes</small>
-                        </div>
-                        <div class="col-3">
-                            <h4 class="font-weight-bold text-dark">99%</h4>
-                            <small class="text-muted">Uptime</small>
-                        </div>
-                    </div>
+                        <a href="login.php" class="btn btn-theme btn-lg px-4">
+                            Get Started
+                        </a>
+
                 </div>
             </div>
         </div>
@@ -111,49 +113,47 @@
             </div>
 
             <div class="row">
-                <!-- Feature 1 -->
+
                 <div class="col-md-3 text-center mb-4">
-                    <div class="p-3 border rounded h-100 shadow-sm bg-white">
-                        <div class="feature-icon text-info">
+                    <div class="p-4 border rounded h-100 shadow-sm bg-white feature-card">
+                        <div class="feature-icon icon-blue">
                             <i class="fas fa-stopwatch"></i>
                         </div>
-                        <h4 class="font-weight-bold">Timed Quizzes</h4>
-                        <p class="text-muted">Set specific time limits for exams to ensure fairness and test speed along with accuracy.</p>
+                        <h5 class="font-weight-bold">Timed Quizzes</h5>
+                        <p class="text-muted">Real-time countdown ensures fair and time-bound assessments.</p>
                     </div>
                 </div>
 
-                <!-- Feature 2 -->
                 <div class="col-md-3 text-center mb-4">
-                    <div class="p-3 border rounded h-100 shadow-sm bg-white">
-                        <div class="feature-icon text-info">
-                            <i class="fas fa-chart-pie"></i>
+                    <div class="p-4 border rounded h-100 shadow-sm bg-white feature-card">
+                        <div class="feature-icon icon-green">
+                            <i class="fas fa-chart-line"></i>
                         </div>
-                        <h4 class="font-weight-bold">Instant Results</h4>
-                        <p class="text-muted">No waiting required. Get detailed scorecards and performance analysis immediately.</p>
+                        <h5 class="font-weight-bold">Instant Results</h5>
+                        <p class="text-muted">Get scores immediately with detailed performance insights.</p>
                     </div>
                 </div>
 
-                <!-- Feature 3 -->
                 <div class="col-md-3 text-center mb-4">
-                    <div class="p-3 border rounded h-100 shadow-sm bg-white">
-                        <div class="feature-icon text-info">
+                    <div class="p-4 border rounded h-100 shadow-sm bg-white feature-card">
+                        <div class="feature-icon icon-green">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h4 class="font-weight-bold">Secure Platform</h4>
-                        <p class="text-muted">Your data is safe with us. We use advanced encryption to protect user information.</p>
+                        <h5 class="font-weight-bold">Secure System</h5>
+                        <p class="text-muted">Advanced protection ensures safe and reliable exams.</p>
                     </div>
                 </div>
 
-                <!-- Feature 4 -->
                 <div class="col-md-3 text-center mb-4">
-                    <div class="p-3 border rounded h-100 shadow-sm bg-white">
-                        <div class="feature-icon text-info">
-                            <i class="fas fa-laptop-code"></i>
+                    <div class="p-4 border rounded h-100 shadow-sm bg-white feature-card">
+                        <div class="feature-icon icon-orange">
+                            <i class="fas fa-layer-group"></i>
                         </div>
-                        <h4 class="font-weight-bold">Multi-Subject</h4>
-                        <p class="text-muted">Supports various categories including Technical, General Knowledge, Aptitude, and more.</p>
+                        <h5 class="font-weight-bold">Multi Categories</h5>
+                        <p class="text-muted">Supports technical, aptitude, and general knowledge quizzes.</p>
                     </div>
-                </div>
+                </div> 
+               
             </div>
         </div>
     </section>
@@ -161,23 +161,51 @@
     <section id="about" class="spacer bg-light">
         <div class="container">
             <div class="row align-items-center">
+
+                <!-- LEFT CONTENT -->
                 <div class="col-md-6">
-                    <h5 class="text-info font-weight-bold text-uppercase">About Us</h5>
-                    <h2 class="text-dark font-weight-bold mb-3">Simplifying Assessments</h2>
-                    <p class="text-dark font-16 mb-3">
-                        The Online Quiz & Assessment Application is designed to make testing efficient and accessible.
+
+                    <h5 class="text-uppercase font-weight-bold" style="color:var(--primary);">
+                        About Us
+                    </h5>
+
+                    <h2 class="text-dark font-weight-bold mb-3">
+                        Smart & Scalable Assessment Platform
+                    </h2>
+
+                    <p class="text-muted mb-3">
+                    Our platform is built to simplify the way quizzes and assessments are conducted. 
+                    Whether you are an instructor creating tests or a participant improving skills, 
+                    we provide a seamless and efficient experience.
                     </p>
-                    <p class="text-muted font-16 mb-4">
-                        Whether you are a student looking to practice, or an organization looking to hire, our platform offers the flexibility you need. Participants can navigate between questions, review answers, and receive instant feedback.
+
+                    <p class="text-muted mb-4">
+                    With features like real-time evaluation, smart navigation, and instant feedback, 
+                    we ensure a smooth testing journey for users at every level.
                     </p>
-                    <a href="#contact" class="btn btn-info text-white">Contact Us</a>
+
+                    <ul class="list-unstyled text-muted">
+                    <li><i class="fas fa-check text-success mr-2"></i> Easy quiz creation</li>
+                    <li><i class="fas fa-check text-success mr-2"></i> Instant performance tracking</li>
+                    <li><i class="fas fa-check text-success mr-2"></i> Secure and scalable system</li>
+                    </ul>
+
+                    <a href="#contact" class="btn btn-theme mt-3">
+                        Contact Us
+                    </a>
+
                 </div>
+
+                <!-- RIGHT IMAGE -->
                 <div class="col-md-6 mt-4 mt-md-0">
-                     <div class="p-5 bg-white rounded shadow-sm border text-center">
-                        <i class="fas fa-users fa-5x text-muted" style="opacity: 0.3"></i>
-                        <h4 class="mt-3 text-muted">Assessment Platform</h4>
+
+                    <div class="about-img-box">
+                        <img src="assets/images/quiz.jpg" 
+                            class="img-fluid rounded shadow-sm">
                     </div>
+
                 </div>
+
             </div>
         </div>
     </section>
@@ -195,25 +223,25 @@
 
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <form class="bg-light p-4 rounded border">
+                    <form class="bg-light p-4 rounded border" id="ContactForm">
                         <div class="row">
                             <div class="col-md-6 form-group mb-3">
                                 <label class="font-weight-bold text-dark">Your Name</label>
-                                <input type="text" class="form-control" placeholder="JManilk  Malohadra">
+                                <input type="text"  id= "name" class="form-control" placeholder="Manilk malhodra">
                             </div>
                             <div class="col-md-6 form-group mb-3">
                                 <label class="font-weight-bold text-dark">Email Address</label>
-                                <input type="email" class="form-control" placeholder="youremail@example.com">
+                                <input type="email" id= "email" class="form-control" placeholder="youremail@example.com">
                             </div>
                         </div>
                         
                         <div class="form-group mb-3">
                             <label class="font-weight-bold text-dark">Message</label>
-                            <textarea class="form-control" rows="5" placeholder="How can we help you?"></textarea>
+                            <textarea class="form-control" id= "message" rows="5" placeholder="How can we help you?"></textarea>
                         </div>
 
                         <div class="text-center mt-3">
-                            <button class="btn btn-info text-white btn-lg px-5">Send Message</button>
+                           <button  type="submit" class="btn btn-theme btn-lg px-5">Send Message</button>
                         </div>
                     </form>
                 </div>
@@ -221,78 +249,107 @@
         </div>
     </section>
 
-    <footer class="bg-dark text-white pt-5 pb-4">
+   <footer class="bg-dark text-white pt-5 pb-3 footer-custom">
         <div class="container">
             <div class="row">
-                <!-- Col 1 -->
                 <div class="col-md-4 mb-4">
-                    <h4 class="text-white font-weight-bold mb-3">
-                    QuizApp
-                    </h4>
+                    <h4 class="font-weight-bold mb-3">QuizApp</h4>
                     <p class="text-muted">
-                        A modern solution for online assessments, technical interviews, and general knowledge testing.
+                        A modern platform for online quizzes, assessments, and skill evaluation.
+                        Fast, secure, and easy to use for everyone.
                     </p>
                 </div>
 
-                <!-- Col 2 -->
+           
                 <div class="col-md-2 mb-4">
-                    <h5 class="text-white mb-3">Links</h5>
-                    <ul class="list-unstyled">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
                         <li><a href="#home">Home</a></li>
                         <li><a href="#features">Features</a></li>
-                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#about">About</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 3 -->
+                <!-- ACCOUNT -->
                 <div class="col-md-2 mb-4">
-                    <h5 class="text-white mb-3">Account</h5>
-                    <ul class="list-unstyled">
+                    <h5 class="mb-3">Account</h5>
+                    <ul class="list-unstyled footer-links">
                         <li><a href="pages/login.php">Login</a></li>
                         <li><a href="pages/register.php">Register</a></li>
                         <li><a href="#">Help Center</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 4 -->
+                <!-- CONTACT DETAILS -->
                 <div class="col-md-4 mb-4">
-                    <h5 class="text-white mb-3">Follow Us</h5>
-                    <div class="d-flex">
-                        <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="btn btn-outline-light btn-sm mr-2"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-github"></i></a>
-                    </div>
+                    <h5 class="mb-3">Contact Us</h5>
+
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-phone-alt me-2 text-info"></i>
+                        +91 98765 43210
+                    </p>
+
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-envelope me-2 text-info"></i>
+                        quizapp@quiz.com
+                    </p>
+
+                    <p class="text-muted">
+                        <i class="fas fa-map-marker-alt me-2 text-info"></i>
+                        dodamarg, Maharashtra, India
+                    </p>
+
                 </div>
+
             </div>
 
-            <hr class="bg-secondary opacity-25">
+                <!-- DIVIDER -->
+                <hr class="bg-secondary opacity-25">
 
-            <div class="text-center pt-3 text-muted">
-                © 2026 Online Quiz System. All Rights Reserved.
-            </div>
+                <!-- COPYRIGHT -->
+                <div class="text-center text-muted small">
+                    © 2026 QuizApp. All Rights Reserved. | Designed by Babali Shirodkar
+                </div>
         </div>
     </footer>
 
 </div>
-
-
-<script src="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/assets/libs/jquery/dist/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://demos.wrappixel.com/free-admin-templates/bootstrap/matrix-bootstrap-free/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     $(document).ready(function(){
-        $('a[href^="#"]').on('click', function(event) {
-            var target = $(this.getAttribute('href'));
-            if( target.length ) {
-                event.preventDefault();
-                $('html, body').stop().animate({
-                    scrollTop: target.offset().top - 70 
-                }, 1000);
-            }
+            $('a[href^="#"]').on('click', function(event) {
+                var target = $(this.getAttribute('href'));
+                if( target.length ) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top -50
+                    }, 1000);
+                }
+            });
+    
+
+            $("#ContactForm").submit(function(e){
+            e.preventDefault();
+
+            $.post("backend/sendmail.php", {
+                name: $("#name").val(),
+                email: $("#email").val(),
+                message: $("#message").val()
+            }, function(res){
+
+                if(res.status === "success"){
+                    alert("Message sent successfully!");
+                    $("#ContactForm")[0].reset();
+                }else{
+                    alert(res.message);
+                }
+
+            }, "json");
         });
     });
+
 </script>
 
 </body>

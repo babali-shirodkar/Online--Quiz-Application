@@ -9,7 +9,6 @@ $sql = "SELECT
         q.total_questions,
         q.duration,
         q.total_marks,
-        q.attempt_limit,
         q.category_id,
         c.category_name
         FROM quizzes q

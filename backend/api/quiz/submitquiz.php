@@ -19,9 +19,7 @@ if(!isset($user_id)){
     throw new Exception("User not authenticated");
 }
 
-/* =========================
-   GET QUIZ ID FROM ATTEMPT
-========================= */
+
 
 $att = $conn->prepare("
 SELECT quiz_id FROM quiz_attempts WHERE id=? AND user_id=?
@@ -38,9 +36,7 @@ if(!$attRes){
 
 $quiz_id = $attRes['quiz_id'];
 
-/* =========================
-   GET ATTEMPT QUESTIONS ONLY
-========================= */
+
 
 $q = $conn->prepare("
 SELECT question_id FROM attempt_questions
@@ -58,9 +54,6 @@ $correct = 0;
 $wrong = 0;
 $skipped = 0;
 
-/* =========================
-   LOOP EACH QUESTION
-========================= */
 
 while($ques = $qres->fetch_assoc()){
 
@@ -113,17 +106,9 @@ while($ques = $qres->fetch_assoc()){
     }
 }
 
-/* =========================
-   CALCULATE PERCENTAGE
-========================= */
-
 $percentage = ($total_questions > 0)
     ? ($correct / $total_questions) * 100
     : 0;
-
-/* =========================
-   UPDATE ATTEMPT
-========================= */
 
 $update = $conn->prepare("
 UPDATE quiz_attempts
@@ -135,10 +120,6 @@ WHERE id=?
 
 $update->bind_param("ii",$correct,$attempt_id);
 $update->execute();
-
-/* =========================
-   INSERT RESULT
-========================= */
 
 $resultInsert = $conn->prepare("
 INSERT INTO results
@@ -156,16 +137,7 @@ $resultInsert->bind_param(
 );
 
 $resultInsert->execute();
-
-/* =========================
-   COMMIT
-========================= */
-
 $conn->commit();
-
-/* =========================
-   RESPONSE
-========================= */
 
 echo json_encode([
     "status"=>"success",

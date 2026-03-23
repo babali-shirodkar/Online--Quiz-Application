@@ -263,3 +263,4 @@ function showMessage(type, msg) {
     .addClass("alert-" + type)
     .text(msg);
 }
+
