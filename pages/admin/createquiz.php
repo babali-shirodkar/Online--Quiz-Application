@@ -204,8 +204,7 @@
 
 					alert("Quiz Created Successfully");
 
-					window.location.href =
-						"editquiz.php?quiz_id=" + response.quiz_id;
+					window.location.href ="editquiz.php?quiz_id=" + response.quiz_id;
 
 				}else{
 

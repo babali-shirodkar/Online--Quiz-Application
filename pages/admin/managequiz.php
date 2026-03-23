@@ -154,11 +154,15 @@
 				if(q.status === "draft"){
 
 					actionBtns = `
-						<a href="editquiz.php?quiz_id=${q.quiz_id}">
+						<a href="editquiz.php?quiz_id=${q.quiz_id}" title="Edit">
 							<i class="mdi mdi-pencil text-primary"></i>
 						</a>
 
-						<a href="#" onclick="deleteQuiz(${q.quiz_id})">
+						<a href="#" onclick="publishQuiz(${q.quiz_id})" title="Publish">
+							<i class="mdi mdi-upload text-success"></i>
+						</a>
+
+						<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
 							<i class="mdi mdi-delete text-danger"></i>
 						</a>
 					`;
@@ -167,7 +171,11 @@
 				else if(q.status === "published"){
 
 					actionBtns = `
-						<a href="#" onclick="deleteQuiz(${q.quiz_id})">
+						<a href="#" onclick="unpublishQuiz(${q.quiz_id})" title="Unpublish">
+							<i class="mdi mdi-download text-warning"></i>
+						</a>
+
+						<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
 							<i class="mdi mdi-delete text-danger"></i>
 						</a>
 					`;
@@ -320,18 +328,53 @@
 
 	function publishQuiz(id){
 
-		if(!confirm("Publish this quiz?")) return;
+    if(!confirm("Publish this quiz?")) return;
 
-		$.post(api_url + "quiz/publishquiz.php", {quiz_id: id}, function(res){
+    $.ajax({
+        url: api_url + "quiz/publishquiz.php",
+        type: "POST",
+        contentType: "application/json",
+        dataType: "json",   
+        data: JSON.stringify({ quiz_id: id }),
 
-			if(res.status == "success"){
-				alert("Quiz published successfully");
-				location.reload();
-			}
+        success: function(res){
 
-		}, "json");
+            console.log(res); 
 
-	}
+            if(res.status === "success"){
+                alert("Quiz published successfully");
+                location.reload();
+            } else {
+                alert(res.message || "Something went wrong");
+            }
+        },
+
+        error: function(xhr){
+            console.log(xhr.responseText);
+            alert("Server error");
+        }
+    });
+
+}
+
+	/* Un publish Quiz */
+
+	function unpublishQuiz(id){
+
+    if(!confirm("Unpublish this quiz? It will move to draft.")) return;
+
+    $.post(api_url + "quiz/unpublishquiz.php", {quiz_id: id}, function(res){
+
+        if(res.status == "success"){
+            alert("Quiz moved to draft successfully");
+            location.reload();
+        }else{
+            alert(res.message || "Something went wrong");
+        }
+
+    }, "json");
+
+}
 
 
 	function deleteQuiz(id){

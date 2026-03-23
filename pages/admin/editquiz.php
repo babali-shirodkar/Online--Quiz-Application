@@ -236,7 +236,6 @@
 				$("input[name='tmarks']").val(q.total_marks);
 				$("input[name='duration']").val(q.duration);
 				$("input[name='total_question']").val(q.total_questions);
-				$("input[name='attempt']").val(q.attempt_limit);
 				$("select[name='category']").val(q.category_id);
 
 			}

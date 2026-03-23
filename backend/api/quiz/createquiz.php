@@ -11,8 +11,6 @@ $category_id = $data['category_id'] ?? '';
 $duration = $data['duration'] ?? '';
 $total_marks = $data['total_marks'] ?? '';
 $total_questions = $data['total_questions'] ?? '';
-$attempt_limit = $data['attempt_limit'] ?? '';
-
 $created_by = $_SESSION['user_id'] ?? 0;
 
 if(empty($title) || empty($category_id) || empty($duration)){
@@ -24,17 +22,16 @@ if(empty($title) || empty($category_id) || empty($duration)){
 }
 
 $stmt = $conn->prepare("INSERT INTO quizzes 
-(category_id,title,duration,total_marks,total_questions,attempt_limit,created_by)
-VALUES (?,?,?,?,?,?,?)");
+(category_id,title,duration,total_marks,total_questions,created_by)
+VALUES (?,?,?,?,?,?)");
 
 $stmt->bind_param(
-    "isiiiii",
+    "isiiii",
     $category_id,
     $title,
     $duration,
     $total_marks,
     $total_questions,
-    $attempt_limit,
     $created_by
 );
 

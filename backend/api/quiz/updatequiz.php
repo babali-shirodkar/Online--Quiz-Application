@@ -13,7 +13,6 @@ $category_id    = $data['category_id'] ?? '';
 $duration       = $data['duration'] ?? '';
 $total_marks    = $data['total_marks'] ?? '';
 $total_questions= $data['total_questions'] ?? '';
-$attempt_limit  = $data['attempt_limit'] ?? '';
 
 if(!$quiz_id){
     echo json_encode([
@@ -40,7 +39,6 @@ $sql = "UPDATE quizzes
             duration=?,
             total_marks=?,
             total_questions=?,
-            attempt_limit=?
         WHERE quiz_id=?";
 
 $stmt = $conn->prepare($sql);
@@ -59,13 +57,12 @@ if(!$stmt){
 /* BIND PARAM */
 
 $stmt->bind_param(
-    "siiiiii",
+    "siiiii",
     $title,
     $category_id,
     $duration,
     $total_marks,
     $total_questions,
-    $attempt_limit,
     $quiz_id
 );
 
