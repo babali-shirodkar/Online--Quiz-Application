@@ -1,42 +1,69 @@
 <?php
 
 header("Content-Type: application/json");
-
 require_once "../../confi/database.php";
 
-$quiz_id = $_GET['quiz_id'] ?? '';
+try{
 
-$questions = [];
+    /* GET JSON INPUT */
+    $data = json_decode(file_get_contents("php://input"), true);
 
-$q = $conn->prepare("SELECT * FROM questions WHERE quiz_id=?");
-$q->bind_param("i",$quiz_id);
-$q->execute();
+    $quiz_id = $data['quiz_id'] ?? 0;
 
-$result = $q->get_result();
+    if(!$quiz_id){
+        throw new Exception("Quiz ID missing");
+    }
 
-while($row = $result->fetch_assoc()){
+    $questions = [];
 
-$question_id = $row['id'];
+    /* GET QUESTIONS */
 
-$options = [];
+    $q = $conn->prepare("SELECT * FROM questions WHERE quiz_id=?");
+    $q->bind_param("i", $quiz_id);
 
-$o = $conn->prepare("SELECT * FROM options WHERE question_id=?");
-$o->bind_param("i",$question_id);
-$o->execute();
+    if(!$q->execute()){
+        throw new Exception($q->error);
+    }
 
-$optres = $o->get_result();
+    $result = $q->get_result();
 
-while($opt = $optres->fetch_assoc()){
-$options[] = $opt;
+    while($row = $result->fetch_assoc()){
+
+        $question_id = $row['id'];
+
+        $options = [];
+
+        /* GET OPTIONS */
+
+        $o = $conn->prepare("SELECT * FROM options WHERE question_id=?");
+        $o->bind_param("i", $question_id);
+
+        if(!$o->execute()){
+            throw new Exception($o->error);
+        }
+
+        $optres = $o->get_result();
+
+        while($opt = $optres->fetch_assoc()){
+            $options[] = $opt;
+        }
+
+        $row['options'] = $options;
+
+        $questions[] = $row;
+
+    }
+
+    echo json_encode([
+        "status" => "success",
+        "questions" => $questions
+    ]);
+
+}catch(Exception $e){
+
+    echo json_encode([
+        "status" => "error",
+        "message" => $e->getMessage()
+    ]);
+
 }
-
-$row['options'] = $options;
-
-$questions[] = $row;
-
-}
-
-echo json_encode([
-"status"=>"success",
-"questions"=>$questions
-]);

@@ -5,58 +5,79 @@ header("Content-Type: application/json");
 require_once "../../confi/database.php";
 include "../../../userAccess.php";
 
-if(!isset($user_id)){
-    echo json_encode([
-        "status"=>"error",
-        "message"=>"Unauthorized"
-    ]);
-    exit;
-}
+try{
 
-$where = "";
-if($role === "admin"){
-    $where = "";
-}
-else if($role === "instructor"){
-    $where = "WHERE q.created_by = ?";
-}
+    if(!isset($user_id)){
+        throw new Exception("Unauthorized");
+    }
 
-$sql = "SELECT 
-q.quiz_id,
-q.title,
-c.category_name AS category,
-q.duration,
-q.total_questions,
-q.total_marks,
-q.status,
-u.name AS instructor_name,
-q.created_by
-FROM quizzes q
-LEFT JOIN categories c ON c.id = q.category_id
-LEFT JOIN users u ON u.user_id = q.created_by
-$where
-ORDER BY q.quiz_id DESC";
+    $data = [];
 
+    /* ADMIN → ALL QUIZZES */
+    if($role === "admin"){
 
+        $sql = "SELECT 
+            q.quiz_id,
+            q.title,
+            c.category_name AS category,
+            q.duration,
+            q.total_questions,
+            q.total_marks,
+            q.status,
+            u.name AS instructor_name,
+            q.created_by
+        FROM quizzes q
+        LEFT JOIN categories c ON c.id = q.category_id
+        LEFT JOIN users u ON u.user_id = q.created_by
+        ORDER BY q.quiz_id DESC";
 
-if($where){
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i",$user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-}else{
-    $result = $conn->query($sql);
-}
+        $result = $conn->query($sql);
 
-$data = [];
+    }
 
-if($result){
+    /* INSTRUCTOR → OWN QUIZZES */
+    else if($role === "instructor"){
+
+        $sql = "SELECT 
+            q.quiz_id,
+            q.title,
+            c.category_name AS category,
+            q.duration,
+            q.total_questions,
+            q.total_marks,
+            q.status,
+            u.name AS instructor_name,
+            q.created_by
+        FROM quizzes q
+        LEFT JOIN categories c ON c.id = q.category_id
+        LEFT JOIN users u ON u.user_id = q.created_by
+        WHERE q.created_by = ?
+        ORDER BY q.quiz_id DESC";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+    }else{
+        throw new Exception("Invalid role");
+    }
+
     while($row = $result->fetch_assoc()){
         $data[] = $row;
     }
-}
 
-echo json_encode([
-    "status" => "success",
-    "data" => $data
-]);
+    echo json_encode([
+        "status" => "success",
+        "data" => $data
+    ]);
+
+}catch(Exception $e){
+
+    echo json_encode([
+        "status" => "error",
+        "message" => $e->getMessage()
+    ]);
+
+}

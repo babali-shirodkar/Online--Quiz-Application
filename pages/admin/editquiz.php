@@ -197,83 +197,95 @@
 
 	function loadCategories(){
 
-		$.get(api_url + "category/getcategories.php", function(res){
+		$.ajax({
+			url: api_url + "category/getcategories.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({}),
+			dataType: "json",
 
-			if(res.status == "success"){
+			success: function(res){
 
-				let html = '<option value="">Select Category</option>';
+				if(res.status == "success"){
 
-				res.data.forEach(function(cat){
+					let html = '<option value="">Select Category</option>';
 
-					html += `
-						<option value="${cat.id}">
-							${cat.category_name}
-						</option>
-					`;
+					res.data.forEach(function(cat){
+						html += `<option value="${cat.id}">${cat.category_name}</option>`;
+					});
 
-				});
-
-				$("#category").html(html);
-
+					$("#category").html(html);
+				}
 			}
-
-		}, "json");
+		});
 
 	}
-
 
 	/*Load Quiz */
 
 	function loadQuiz(){
 
-		$.get(api_url + "quiz/getquiz.php?quiz_id=" + quiz_id, function(res){
+		$.ajax({
+			url: api_url + "quiz/getquiz.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ quiz_id: quiz_id }),
+			dataType: "json",
 
-			if(res.status === "success"){
+			success: function(res){
 
-				let q = res.quiz;
+				if(res.status === "success"){
 
-				$("input[name='quiz_title']").val(q.title);
-				$("input[name='tmarks']").val(q.total_marks);
-				$("input[name='duration']").val(q.duration);
-				$("input[name='total_question']").val(q.total_questions);
-				$("select[name='category']").val(q.category_id);
+					let q = res.quiz;
+
+					$("input[name='quiz_title']").val(q.title);
+					$("input[name='tmarks']").val(q.total_marks);
+					$("input[name='duration']").val(q.duration);
+					$("input[name='total_question']").val(q.total_questions);
+					$("select[name='category']").val(q.category_id);
+
+				}
 
 			}
-
-		}, "json");
+		});
 
 	}
-
 
 	/*Load Question */
 
 	function loadQuestions(){
 
-		$.get(api_url + "question/getquestions.php?quiz_id=" + quiz_id, function(res){
+		$.ajax({
+			url: api_url + "question/getquestions.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ quiz_id: quiz_id }),
+			dataType: "json",
 
-			if(res.status !== "success") return;
+			success: function(res){
 
-			$("#questionContainer").html("");
+				if(res.status !== "success") return;
 
-			res.questions.forEach(function(q){
+				$("#questionContainer").html("");
 
-				let block = addQuestionUI(q);
+				res.questions.forEach(function(q){
 
-				block.find(".optionContainer").html("");
+					let block = addQuestionUI(q);
+					block.find(".optionContainer").html("");
 
-				if(q.options){
+					if(q.options){
+						q.options.forEach(function(op){
+							addOptionUI(block, q.question_type, op.option_text, op.is_correct);
+						});
+					}
 
-					q.options.forEach(function(op){
-						addOptionUI(block, q.question_type, op.option_text, op.is_correct);
-					});
+				});
 
-				}
+				updateQuestionNumbers();
 
-			});
+			}
 
-			updateQuestionNumbers();
-
-		}, "json");
+		});
 
 	}
 
@@ -660,75 +672,78 @@
 
 		let requiredQuestions = parseInt($("input[name='total_question']").val());
 
-		$.get(api_url + "question/getquestions.php?quiz_id=" + quiz_id, function(res){
+		$.ajax({
+			url: api_url + "question/getquestions.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ quiz_id: quiz_id }),
+			dataType: "json",
 
-			if(res.status != "success"){
-				alert("Unable to verify questions");
-				return;
-			}
+			success: function(res){
 
-			let currentQuestions = parseInt(res.questions.length);
-
-			if(currentQuestions < requiredQuestions){
-
-				alert("You must add " + requiredQuestions + " questions before publishing.\nCurrently added: " + currentQuestions);
-				return;
-
-			}
-
-			let invalidQuestion = false;
-
-			res.questions.forEach(function(q){
-
-				if(!q.options || q.options.length < 2){
-					invalidQuestion = true;
+				if(res.status != "success"){
+					alert("Unable to verify questions");
+					return;
 				}
 
-				let correctCount = 0;
+				let currentQuestions = parseInt(res.questions.length);
 
-				q.options.forEach(function(op){
-					if(op.is_correct == 1) correctCount++;
-				});
-
-				if(correctCount == 0){
-					invalidQuestion = true;
+				if(currentQuestions < requiredQuestions){
+					alert("You must add " + requiredQuestions + " questions before publishing.\nCurrently added: " + currentQuestions);
+					return;
 				}
 
-			});
+				let invalidQuestion = false;
 
-			if(invalidQuestion){
+				res.questions.forEach(function(q){
 
-				alert("Each question must have at least 2 options and one correct answer");
-				return;
-
-			}
-
-			$.ajax({
-
-				url: api_url + "quiz/publishquiz.php",
-				type: "POST",
-				contentType: "application/json",
-				data: JSON.stringify({quiz_id: quiz_id}),
-				dataType: "json",
-
-				success: function(res){
-
-					if(res.status == "success"){
-						alert("Quiz Published Successfully");
-						location.reload();
-					}else{
-						alert(res.message);
+					if(!q.options || q.options.length < 2){
+						invalidQuestion = true;
 					}
 
-				},
+					let correctCount = 0;
 
-				error: function(){
-					alert("Server error while publishing quiz");
+					q.options.forEach(function(op){
+						if(op.is_correct == 1) correctCount++;
+					});
+
+					if(correctCount == 0){
+						invalidQuestion = true;
+					}
+
+				});
+
+				if(invalidQuestion){
+					alert("Each question must have at least 2 options and one correct answer");
+					return;
 				}
 
-			});
+				/* publish api */
+				
+				$.ajax({
+					url: api_url + "quiz/publishquiz.php",
+					type: "POST",
+					contentType: "application/json",
+					data: JSON.stringify({quiz_id: quiz_id}),
+					dataType: "json",
 
-		}, "json");
+					success: function(res){
+						if(res.status == "success"){
+							alert("Quiz Published Successfully");
+							location.reload();
+						}else{
+							alert(res.message);
+						}
+					},
+
+					error: function(){
+						alert("Server error while publishing quiz");
+					}
+				});
+
+			}
+
+		});
 
 	}
 

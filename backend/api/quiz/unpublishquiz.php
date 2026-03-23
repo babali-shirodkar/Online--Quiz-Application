@@ -7,7 +7,10 @@ include "../../../userAccess.php";
 
 try{
 
-    $quiz_id = $_POST['quiz_id'] ?? '';
+    /* GET JSON INPUT */
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $quiz_id = $data['quiz_id'] ?? 0;
 
     if(!$quiz_id){
         throw new Exception("Quiz ID missing");
@@ -17,9 +20,15 @@ try{
         throw new Exception("Unauthorized access");
     }
 
-    $check = $conn->prepare("SELECT status FROM quizzes WHERE quiz_id=?");
+    /* CHECK QUIZ STATUS */
+
+    $check = $conn->prepare("
+        SELECT status FROM quizzes WHERE quiz_id=?
+    ");
+
     $check->bind_param("i", $quiz_id);
     $check->execute();
+
     $result = $check->get_result();
 
     if($result->num_rows == 0){
@@ -31,6 +40,8 @@ try{
     if($row['status'] !== 'published'){
         throw new Exception("Only published quiz can be unpublished");
     }
+
+    /* UPDATE STATUS */
 
     $stmt = $conn->prepare("
         UPDATE quizzes 

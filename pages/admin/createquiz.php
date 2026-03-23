@@ -132,56 +132,69 @@
 	});
 
 
+	/* Load Categories */
+
 	function loadCategories(){
 
-		$.get(api_url + "category/getcategories.php", function(res){
+		$.ajax({
+			url: api_url + "category/getcategories.php",
+			type: "GET",
+			dataType: "json",
 
-			if(res.status == "success"){
+			success: function(res){
 
-				let html = '<option value="">Select Category</option>';
+				if(res.status === "success"){
 
-				res.data.forEach(function(cat){
+					let html = '<option value="">Select Category</option>';
 
-					html += `
-						<option value="${cat.id}">
-							${cat.category_name}
-						</option>
-					`;
+					res.data.forEach(function(cat){
 
-				});
+						html += `
+							<option value="${cat.id}">
+								${cat.category_name}
+							</option>
+						`;
 
-				$("#category").html(html);
+					});
 
+					$("#category").html(html);
+
+				}else{
+					alert(res.message || "Failed to load categories");
+				}
+			},
+
+			error: function(){
+				alert("Error loading categories");
 			}
-
-		}, "json");
+		});
 
 	}
 
 
+	/* CREATE QUIZ */
+
 	function createQuiz(){
 
-		let title = $("#qtitle").val();
+		let title = $("#qtitle").val().trim();
 		let total_marks = $("#tmarks").val();
 		let category_id = $("#category").val();
 		let duration = $("#duration").val();
 		let total_questions = $("#tques").val();
 		let attempt_limit = $("#attempt").val();
 
-		if(title == "" || category_id == "" || duration == ""){
+		if(title === "" || category_id === "" || duration === ""){
 			alert("Please fill required fields");
 			return;
 		}
 
 		let quizData = {
-
 			title: title,
 			category_id: category_id,
 			duration: duration,
 			total_marks: total_marks,
 			total_questions: total_questions,
 			attempt_limit: attempt_limit
-
 		};
 
 		$.ajax({
@@ -204,11 +217,11 @@
 
 					alert("Quiz Created Successfully");
 
-					window.location.href ="editquiz.php?quiz_id=" + response.quiz_id;
+					window.location.href = "editquiz.php?quiz_id=" + response.quiz_id;
 
 				}else{
 
-					alert(response.message);
+					alert(response.message || "Failed to create quiz");
 
 				}
 
@@ -217,7 +230,7 @@
 			error: function(xhr){
 
 				console.log(xhr.responseText);
-				alert("Something went wrong");
+				alert("Server error. Please try again");
 
 			}
 

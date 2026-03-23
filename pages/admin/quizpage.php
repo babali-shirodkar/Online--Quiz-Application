@@ -220,7 +220,21 @@
 
 	function loadQuestions(){
 
-		$.get(api_url + "question/getquizquestions.php?attempt_id=" + attempt_id, function(res){
+	$.ajax({
+		url: api_url + "question/getquizquestions.php",
+		type: "POST",
+		contentType: "application/json",
+		dataType: "json",
+		data: JSON.stringify({
+			attempt_id: attempt_id
+		}),
+
+		success: function(res){
+
+			if(res.status !== "success"){
+				alert(res.message);
+				return;
+			}
 
 			questions = res.questions;
 
@@ -246,10 +260,13 @@
 
 			startTimer(res.duration);
 
-		}, "json");
+		},
 
-	}
-
+		error: function(){
+			alert("Failed to load quiz");
+		}
+	});
+}
 
 	/* CREATE PALETTE */
 
@@ -365,10 +382,15 @@
 
 			answers[questions[currentIndex].id] = selected;
 
-			$.post(api_url + "question/savesingleanswer.php", {
-				attempt_id: attempt_id,
-				question_id: questions[currentIndex].id,
-				options: selected
+			$.ajax({
+				url: api_url + "question/savesingleanswer.php",
+				type: "POST",
+				contentType: "application/json",
+				data: JSON.stringify({
+					attempt_id: attempt_id,
+					question_id: questions[currentIndex].id,
+					options: selected
+				})
 			});
 
 			$(".qbox").eq(currentIndex)
@@ -378,7 +400,6 @@
 		}
 
 		updateCount();
-
 	}
 
 
@@ -390,10 +411,15 @@
 
 		$("#questionBox input").prop("checked", false);
 
-		$.post(api_url + "question/savesingleanswer.php", {
-			attempt_id: attempt_id,
-			question_id: questions[currentIndex].id,
-			options: []
+		$.ajax({
+			url: api_url + "question/savesingleanswer.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({
+				attempt_id: attempt_id,
+				question_id: questions[currentIndex].id,
+				options: []
+			})
 		});
 
 		$(".qbox").eq(currentIndex)
@@ -529,22 +555,37 @@
 
 		saveAnswer();
 
-		$.post(api_url + "question/saveanswer.php", {
-			attempt_id: attempt_id
-		}, function(res){
+		$.ajax({
+			url: api_url + "question/saveanswer.php",
+			type: "POST",
+			contentType: "application/json",
+			dataType: "json",
+			data: JSON.stringify({
+				attempt_id: attempt_id
+			}),
 
-			if(res.status == "success"){
+			success: function(res){
 
-				localStorage.removeItem("quiz_start_time_" + attempt_id);
-				localStorage.removeItem("quiz_current_index_" + attempt_id);
+				if(res.status == "success"){
 
-				alert("Quiz Submitted Successfully");
+					localStorage.removeItem("quiz_start_time_" + attempt_id);
+					localStorage.removeItem("quiz_current_index_" + attempt_id);
 
-				window.location.href = "result.php?attempt_id=" + res.attempt_id;
+					alert("Quiz Submitted Successfully");
 
+					window.location.href = "result.php?attempt_id=" + res.attempt_id;
+
+				}else{
+					alert(res.message);
+				}
+
+			},
+
+			error: function(){
+				alert("Server error while submitting quiz");
 			}
 
-		}, "json");
+		});
 
 	});
 
