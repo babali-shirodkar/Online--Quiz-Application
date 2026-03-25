@@ -159,6 +159,8 @@
 
                 success: function(response) {
 
+                        console.log(response);
+
                     if (response.status === "success") {
 
                         showMessage("success", "Login successful! Redirecting...");
@@ -207,6 +209,19 @@
             }
 
         }
+
+        function showMessage(type, message) {
+
+        $(".alert").remove(); // remove old messages
+
+        let html = `
+            <div class="alert alert-${type} mt-2">
+                ${message}
+            </div>
+        `;
+
+        $(".login-card").prepend(html);
+    }
 
 
         /* ENTER KEY SUPPORT */

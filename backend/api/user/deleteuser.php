@@ -38,9 +38,9 @@ try{
 
     /* SOFT DELETE (inactive) */
 
-    $stmt = $conn->prepare("
+   $stmt = $conn->prepare("
         UPDATE users 
-        SET status='inactive' 
+        SET is_deleted = 1 
         WHERE user_id=?
     ");
 

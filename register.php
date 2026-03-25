@@ -190,7 +190,20 @@
     });
 }
 
-    </script>
+
+ function showMessage(type, message) {
+
+        $(".alert").remove(); 
+        let html = `
+            <div class="alert alert-${type} mt-2">
+                ${message}
+            </div>
+        `;
+
+        $(".login-card").prepend(html);
+    }
+
+</script>
 
 </body>
 </html>

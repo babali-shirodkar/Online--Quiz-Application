@@ -147,9 +147,6 @@
 					if(q.status == "published"){
 						statusBadge = '<span class="badge bg-success">Published</span>';
 					}
-					else if(q.status == "deleted"){
-						statusBadge = '<span class="badge bg-danger">Deleted</span>';
-					}
 					else{
 						statusBadge = '<span class="badge bg-warning">Draft</span>';
 					}
