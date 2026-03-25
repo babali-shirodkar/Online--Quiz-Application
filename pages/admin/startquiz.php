@@ -120,23 +120,32 @@
 
     function loadQuizDetails(){
 
-        $.get(api_url + "quiz/getquizdetails.php", {
-            quiz_id: quiz_id
-        }, function(res){
+        $.ajax({
+            url: api_url + "quiz/getquizdetails.php?quiz_id=" + quiz_id,
+            type: "GET",
+            dataType: "json",
 
-            if(res.status !== "success"){
-                alert(res.message);
-                return;
+            success: function(res){
+
+                if(res.status !== "success"){
+                    alert(res.message);
+                    return;
+                }
+
+                let q = res.data;
+
+                $("#quizTitle").text(q.title);
+                $("#quizDuration").text(q.duration);
+                $("#quizQuestions").text(q.total_questions);
+                $("#quizMarks").text(q.total_marks);
+
+            },
+
+            error: function(){
+                alert("Failed to load quiz details");
             }
 
-            let q = res.data;
-
-            $("#quizTitle").text(q.title);
-            $("#quizDuration").text(q.duration);
-            $("#quizQuestions").text(q.total_questions);
-            $("#quizMarks").text(q.total_marks);
-
-        }, "json");
+        });
 
     }
 
@@ -148,45 +157,52 @@
         $("#startBtn").prop("disabled", !this.checked);
     });
 
-	$("#startBtn").click(function(){
+        $("#startBtn").click(function(){
 
-		if(!quiz_id){
-			alert("Invalid Quiz ID");
-			return;
-		}
+        if(!quiz_id){
+            alert("Invalid Quiz ID");
+            return;
+        }
 
-		if(!$("#declaration").is(":checked")){
-			alert("Please accept the declaration before starting the quiz.");
-			return;
-		}
+        if(!$("#declaration").is(":checked")){
+            alert("Please accept the declaration before starting the quiz.");
+            return;
+        }
 
+        $("#startBtn").prop("disabled", true).text("Starting...");
 
-		$.post(api_url + "quiz/startquiz.php", {
-			quiz_id: quiz_id
-		}, function(res){
+        $.ajax({
+            url: api_url + "quiz/startquiz.php",
+            type: "POST",
+            contentType: "application/json",
+            dataType: "json",
+            data: JSON.stringify({
+                quiz_id: quiz_id
+            }),
 
-			if(res.status == "success"){
+            success: function(res){
 
-				window.location.href = "quizpage.php?attempt_id=" + res.attempt_id;
+                if(res.status == "success"){
 
-			}else{
+                    window.location.href = "quizpage.php?attempt_id=" + res.attempt_id;
 
-				alert(res.message || "Something went wrong");
+                }else{
 
-				$("#startBtn").prop("disabled", false).text("Start Test");
-			}
+                    alert(res.message || "Something went wrong");
 
-		}, "json").fail(function(){
+                    $("#startBtn").prop("disabled", false).text("Start Test");
+                }
 
-			alert("Server error. Please try again.");
+            },
 
-			$("#startBtn").prop("disabled", false).text("Start Test");
-		});
+            error: function(){
+                alert("Server error. Please try again.");
 
-	});
+                $("#startBtn").prop("disabled", false).text("Start Test");
+            }
 
+        });
 
-
-
+    });
 
 </script>

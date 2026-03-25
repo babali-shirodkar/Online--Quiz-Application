@@ -4,17 +4,11 @@ header("Content-Type: application/json");
 
 require_once "../../confi/database.php";
 
-/* ================================
-   GET JSON INPUT
-================================ */
 
 $data = json_decode(file_get_contents("php://input"), true);
 
 $questions = $data['questions'] ?? [];
 
-/* ================================
-   VALIDATION
-================================ */
 
 if(empty($questions)){
     echo json_encode([
@@ -24,9 +18,6 @@ if(empty($questions)){
     exit;
 }
 
-/* ================================
-   LOOP ALL QUESTIONS
-================================ */
 
 foreach($questions as $q){
 
@@ -41,9 +32,6 @@ foreach($questions as $q){
         continue;
     }
 
-    /* ================================
-       INSERT OR UPDATE QUESTION
-    ================================= */
 
     if(!empty($question_id)){
 
@@ -88,9 +76,7 @@ foreach($questions as $q){
         $question_id = $conn->insert_id;
     }
 
-    /* ================================
-       RESET OPTIONS
-    ================================= */
+ 
 
     $deleteOpt = $conn->prepare("
         DELETE FROM options WHERE question_id = ?
@@ -100,9 +86,6 @@ foreach($questions as $q){
     $deleteOpt->execute();
 
 
-    /* ================================
-       INSERT OPTIONS
-    ================================= */
 
     if(!empty($options)){
 
@@ -126,9 +109,7 @@ foreach($questions as $q){
 
 }
 
-/* ================================
-   FINAL RESPONSE
-================================ */
+
 
 echo json_encode([
     "status"=>"success",

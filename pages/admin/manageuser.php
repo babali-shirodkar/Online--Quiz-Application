@@ -132,67 +132,80 @@
 	});
 
 
+	/* LOAD PARTICIPANTS */
+
 	function loadParticipants(){
 
-		$.get(api_url + "user/getparticipant.php", function(res){
+		$.ajax({
+			url: api_url + "user/getparticipant.php",
+			type: "GET",
+			contentType: "application/json",
+			data: JSON.stringify({}),
+			dataType: "json",
 
-			if(res.status != "success") return;
+			success: function(res){
 
-			let html = "";
+				if(res.status != "success") return;
 
-			res.data.forEach(function(u){
+				let html = "";
 
-				let statusBadge = (u.status == "active") 
-					? '<span class="badge bg-success">Active</span>'
-					: '<span class="badge bg-secondary">Inactive</span>';
+				res.data.forEach(function(u){
 
-				html += `
+					let statusBadge = (u.status == "active") 
+						? '<span class="badge bg-success">Active</span>'
+						: '<span class="badge bg-secondary">Inactive</span>';
 
-				<tr>
+					html += `
 
-					<td>${u.name}</td>
-					<td>${u.email}</td>
-					<td>${statusBadge}</td>
+					<tr>
 
-					<td class="text-center action-icons">
+						<td>${u.name}</td>
+						<td>${u.email}</td>
+						<td>${statusBadge}</td>
 
-						<a href="#" onclick="editParticipant(${u.user_id},'${u.name}','${u.email}')" title="Edit">
-							<i class="mdi mdi-pencil text-primary"></i>
-						</a>
+						<td class="text-center action-icons">
 
-						<a href="#" onclick="toggleStatus(${u.user_id})" title="Activate / Deactivate">
-							<i class="mdi mdi-account-off text-warning"></i>
-						</a>
+							<a href="#" onclick="editParticipant(${u.user_id},'${u.name}','${u.email}')" title="Edit">
+								<i class="mdi mdi-pencil text-primary"></i>
+							</a>
 
-						<a href="#" onclick="deleteParticipant(${u.user_id})" title="Delete">
-							<i class="mdi mdi-delete text-danger"></i>
-						</a>
+							<a href="#" onclick="toggleStatus(${u.user_id})" title="Activate / Deactivate">
+								<i class="mdi mdi-account-off text-warning"></i>
+							</a>
 
-					</td>
+							<a href="#" onclick="deleteParticipant(${u.user_id})" title="Delete">
+								<i class="mdi mdi-delete text-danger"></i>
+							</a>
 
-				</tr>
+						</td>
 
-				`;
+					</tr>
 
-			});
+					`;
 
-			$("#participantBody").html(html);
+				});
 
-			$('#participantTable').DataTable({
-				pageLength: 5,
-				lengthChange: false,
-				destroy: true,
-				paging: true,
-				searching: false,
-				info: true,
-				ordering: true,
-				dom: 'tip'
-			});
+				$("#participantBody").html(html);
 
-		}, "json");
+				$('#participantTable').DataTable({
+					pageLength: 5,
+					lengthChange: false,
+					destroy: true,
+					paging: true,
+					searching: false,
+					info: true,
+					ordering: true,
+					dom: 'tip'
+				});
+
+			}
+
+		});
 
 	}
 
+
+	/* ADD PARTICIPANT */
 
 	function addParticipant(){
 
@@ -200,52 +213,89 @@
 		let email = $("#email").val();
 		let password = $("#password").val();
 
-		$.post(api_url + "user/addparticipant.php", {
-			name: name,
-			email: email,
-			password: password
-		}, function(res){
+		$.ajax({
+			url: api_url + "user/addparticipant.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({
+				name: name,
+				email: email,
+				password: password
+			}),
+			dataType: "json",
 
-			if(res.status == "success"){
-				alert("Participant added successfully");
-				location.reload();
-			}else{
-				alert(res.message);
+			success: function(res){
+
+				if(res.status == "success"){
+					alert("Participant added successfully");
+					location.reload();
+				}else{
+					alert(res.message);
+				}
+
 			}
 
-		}, "json");
+		});
 
 	}
 
+
+	/* DELETE PARTICIPANT */
 
 	function deleteParticipant(id){
 
 		if(!confirm("Delete participant?")) return;
 
-		$.post(api_url + "user/deleteuser.php", {id: id}, function(res){
+		$.ajax({
+			url: api_url + "user/deleteuser.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ id: id }),
+			dataType: "json",
 
-			if(res.status == "success"){
-				alert("Deleted successfully");
-				location.reload();
+			success: function(res){
+
+				if(res.status == "success"){
+					alert("Deleted successfully");
+					location.reload();
+				}else{
+					alert(res.message);
+				}
+
 			}
 
-		}, "json");
+		});
 
 	}
 
+
+	/* TOGGLE STATUS */
 
 	function toggleStatus(id){
 
-		$.post(api_url + "user/togglestatus.php", {id: id}, function(res){
+		$.ajax({
+			url: api_url + "user/togglestatus.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ id: id }),
+			dataType: "json",
 
-			if(res.status == "success"){
-				location.reload();
+			success: function(res){
+
+				if(res.status == "success"){
+					location.reload();
+				}else{
+					alert(res.message);
+				}
+
 			}
 
-		}, "json");
+		});
 
 	}
 
+
+	/* SEARCH */
 
 	$("#searchParticipant").on("keyup", function(){
 

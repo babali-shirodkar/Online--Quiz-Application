@@ -30,7 +30,7 @@ $user = $result->fetch_assoc();
 if (!$user || !password_verify($password, $user['password'])) {
     echo json_encode([
         "status" => "error",
-        "message" => "Invalid email or password"
+        "message" => "Invalid Email ID or Password"
     ]);
     exit;
 }
@@ -43,6 +43,14 @@ if ($user['status'] !== 'active') {
     exit;
 }
 
+/*if ($user['is_deleted'] != 0) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "Your account has been deleted."
+    ]);
+    exit;
+}
+*/
 session_start();
 
 $_SESSION['user_id'] = $user['user_id'];

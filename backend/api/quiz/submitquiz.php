@@ -9,154 +9,166 @@ $conn->begin_transaction();
 
 try{
 
-$attempt_id = $_POST['attempt_id'] ?? '';
+    /* GET JSON INPUT */
+    $data = json_decode(file_get_contents("php://input"), true);
 
-if(!$attempt_id){
-    throw new Exception("Attempt ID missing");
-}
+    $attempt_id = $data['attempt_id'] ?? 0;
 
-if(!isset($user_id)){
-    throw new Exception("User not authenticated");
-}
+    if(!$attempt_id){
+        throw new Exception("Attempt ID missing");
+    }
 
+    if(!isset($user_id)){
+        throw new Exception("User not authenticated");
+    }
 
+    /* VALIDATE ATTEMPT */
 
-$att = $conn->prepare("
-SELECT quiz_id FROM quiz_attempts WHERE id=? AND user_id=?
-");
-
-$att->bind_param("ii",$attempt_id,$user_id);
-$att->execute();
-
-$attRes = $att->get_result()->fetch_assoc();
-
-if(!$attRes){
-    throw new Exception("Invalid attempt");
-}
-
-$quiz_id = $attRes['quiz_id'];
-
-
-
-$q = $conn->prepare("
-SELECT question_id FROM attempt_questions
-WHERE attempt_id=?
-");
-
-$q->bind_param("i",$attempt_id);
-$q->execute();
-
-$qres = $q->get_result();
-
-$total_questions = $qres->num_rows;
-
-$correct = 0;
-$wrong = 0;
-$skipped = 0;
-
-
-while($ques = $qres->fetch_assoc()){
-
-    $question_id = $ques['question_id'];
-
-    /* CORRECT OPTIONS */
-    $correctOpt = [];
-
-    $c = $conn->prepare("
-    SELECT id FROM options 
-    WHERE question_id=? AND is_correct=1
+    $att = $conn->prepare("
+        SELECT quiz_id FROM quiz_attempts 
+        WHERE id=? AND user_id=?
     ");
 
-    $c->bind_param("i",$question_id);
-    $c->execute();
-    $cres = $c->get_result();
+    $att->bind_param("ii",$attempt_id,$user_id);
+    $att->execute();
 
-    while($row = $cres->fetch_assoc()){
-        $correctOpt[] = $row['id'];
+    $attRes = $att->get_result()->fetch_assoc();
+
+    if(!$attRes){
+        throw new Exception("Invalid attempt");
     }
 
-    /* USER OPTIONS */
-    $userOpt = [];
+    $quiz_id = $attRes['quiz_id'];
 
-    $u = $conn->prepare("
-    SELECT option_id FROM user_answers 
-    WHERE attempt_id=? AND question_id=?
+    /* FETCH QUESTIONS */
+
+    $q = $conn->prepare("
+        SELECT question_id 
+        FROM attempt_questions
+        WHERE attempt_id=?
     ");
 
-    $u->bind_param("ii",$attempt_id,$question_id);
-    $u->execute();
-    $ures = $u->get_result();
+    $q->bind_param("i",$attempt_id);
+    $q->execute();
 
-    while($row = $ures->fetch_assoc()){
-        $userOpt[] = $row['option_id'];
+    $qres = $q->get_result();
+
+    $total_questions = $qres->num_rows;
+
+    $correct = 0;
+    $wrong = 0;
+    $skipped = 0;
+
+    while($ques = $qres->fetch_assoc()){
+
+        $question_id = $ques['question_id'];
+
+        /* CORRECT OPTIONS */
+        $correctOpt = [];
+
+        $c = $conn->prepare("
+            SELECT id FROM options 
+            WHERE question_id=? AND is_correct=1
+        ");
+
+        $c->bind_param("i",$question_id);
+        $c->execute();
+
+        $cres = $c->get_result();
+
+        while($row = $cres->fetch_assoc()){
+            $correctOpt[] = $row['id'];
+        }
+
+        /* USER OPTIONS */
+        $userOpt = [];
+
+        $u = $conn->prepare("
+            SELECT option_id FROM user_answers 
+            WHERE attempt_id=? AND question_id=?
+        ");
+
+        $u->bind_param("ii",$attempt_id,$question_id);
+        $u->execute();
+
+        $ures = $u->get_result();
+
+        while($row = $ures->fetch_assoc()){
+            $userOpt[] = $row['option_id'];
+        }
+
+        sort($correctOpt);
+        sort($userOpt);
+
+        if(empty($userOpt)){
+            $skipped++;
+            continue;
+        }
+
+        if($correctOpt === $userOpt){
+            $correct++;
+        }else{
+            $wrong++;
+        }
     }
 
-    sort($correctOpt);
-    sort($userOpt);
+    /* CALCULATE PERCENTAGE */
 
-    if(empty($userOpt)){
-        $skipped++;
-        continue;
-    }
+    $percentage = ($total_questions > 0)
+        ? ($correct / $total_questions) * 100
+        : 0;
 
-    if($correctOpt === $userOpt){
-        $correct++;
-    }else{
-        $wrong++;
-    }
-}
+    /* UPDATE ATTEMPT */
 
-$percentage = ($total_questions > 0)
-    ? ($correct / $total_questions) * 100
-    : 0;
+    $update = $conn->prepare("
+        UPDATE quiz_attempts
+        SET end_time=NOW(),
+            score=?,
+            status='completed'
+        WHERE id=?
+    ");
 
-$update = $conn->prepare("
-UPDATE quiz_attempts
-SET end_time=NOW(),
-    score=?,
-    status='completed'
-WHERE id=?
-");
+    $update->bind_param("ii",$correct,$attempt_id);
+    $update->execute();
 
-$update->bind_param("ii",$correct,$attempt_id);
-$update->execute();
+    /* INSERT RESULT */
 
-$resultInsert = $conn->prepare("
-INSERT INTO results
-(attempt_id, total_questions, correct_answers, wrong_answers, percentage)
-VALUES (?,?,?,?,?)
-");
+    $resultInsert = $conn->prepare("
+        INSERT INTO results
+        (attempt_id, total_questions, correct_answers, wrong_answers, percentage)
+        VALUES (?,?,?,?,?)
+    ");
 
-$resultInsert->bind_param(
-    "iiiid",
-    $attempt_id,
-    $total_questions,
-    $correct,
-    $wrong,
-    $percentage
-);
+    $resultInsert->bind_param(
+        "iiiid",
+        $attempt_id,
+        $total_questions,
+        $correct,
+        $wrong,
+        $percentage
+    );
 
-$resultInsert->execute();
-$conn->commit();
+    $resultInsert->execute();
 
-echo json_encode([
-    "status"=>"success",
-    "attempt_id"=>$attempt_id,
-    "total_questions"=>$total_questions,
-    "correct_answers"=>$correct,
-    "wrong_answers"=>$wrong,
-    "skipped"=>$skipped,
-    "percentage"=>round($percentage,2)
-]);
+    $conn->commit();
+
+    echo json_encode([
+        "status"=>"success",
+        "attempt_id"=>$attempt_id,
+        "total_questions"=>$total_questions,
+        "correct_answers"=>$correct,
+        "wrong_answers"=>$wrong,
+        "skipped"=>$skipped,
+        "percentage"=>round($percentage,2)
+    ]);
 
 }catch(Exception $e){
 
-$conn->rollback();
+    $conn->rollback();
 
-echo json_encode([
-    "status"=>"error",
-    "message"=>$e->getMessage()
-]);
-
+    echo json_encode([
+        "status"=>"error",
+        "message"=>$e->getMessage()
+    ]);
 }
 ?>

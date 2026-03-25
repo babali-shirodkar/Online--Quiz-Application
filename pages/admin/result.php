@@ -132,145 +132,160 @@
 
 	function loadResult(){
 
-		$.get(api_url + "quiz/getresult.php", { attempt_id: attempt_id }, function(res){
+		$.ajax({
+			url: api_url + "quiz/getresult.php",
+			type: "POST",
+			contentType: "application/json",
+			dataType: "json",
+			data: JSON.stringify({
+				attempt_id: attempt_id
+			}),
 
-			if(res.status != "success"){
-				alert("Failed to load result");
-				return;
-			}
+			success: function(res){
 
-			let s = res.summary;
+				if(res.status != "success"){
+					alert("Failed to load result");
+					return;
+				}
 
-			let total = parseInt(s.total_questions);
-			let correct = parseInt(s.correct_answers);
-			let wrong = parseInt(s.wrong_answers);
-			let skipped = total - correct - wrong;
+				let s = res.summary;
 
-			let percent = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
+				let total = parseInt(s.total_questions);
+				let correct = parseInt(s.correct_answers);
+				let wrong = parseInt(s.wrong_answers);
+				let skipped = total - correct - wrong;
 
-			/* SUMMARY */
+				let percent = total > 0 ? ((correct / total) * 100).toFixed(2) : 0;
 
-			$("#scoreMarks").text(correct + " / " + total);
-			$("#correctQ").text(correct);
-			$("#wrongQ").text(wrong);
-			$("#skippedQ").text(skipped);
-			$("#accuracy").text(percent + "%");
-			$("#progressBar").css("width", percent + "%");
+				/* SUMMARY */
 
-			/* PALETTE */
+				$("#scoreMarks").text(correct + " / " + total);
+				$("#correctQ").text(correct);
+				$("#wrongQ").text(wrong);
+				$("#skippedQ").text(skipped);
+				$("#accuracy").text(percent + "%");
+				$("#progressBar").css("width", percent + "%");
 
-			let palette = "";
+				/* PALETTE */
 
-			res.questions.forEach(function(q, index){
+				let palette = "";
 
-				let color = "palette-notanswered";
+				res.questions.forEach(function(q, index){
 
-				if(q.status === "correct")
-					color = "palette-correct";
+					let color = "palette-notanswered";
 
-				else if(q.status === "wrong")
-					color = "palette-wrong";
+					if(q.status === "correct")
+						color = "palette-correct";
 
-				palette += `
-					<button class="palette-btn ${color}" 
-						onclick="scrollToQuestion(${index}, this)">
-						${q.question_order}
-					</button>
-				`;
+					else if(q.status === "wrong")
+						color = "palette-wrong";
 
-			});
-
-			$("#questionPalette").html(palette);
-
-			/* QUESTIONS */
-
-			let html = "";
-
-			res.questions.forEach(function(q, index){
-
-				let statusBadge = "";
-
-				if(q.status === "correct")
-					statusBadge = '<span class="ms-2 text-success"><i class="mdi mdi-check-circle"></i></span>';
-
-				else if(q.status === "wrong")
-					statusBadge = '<span class="ms-2 text-danger"><i class="mdi mdi-close-circle"></i></span>';
-
-				else
-					statusBadge = '<span class="ms-2 text-secondary"><i class="mdi mdi-skip-next-circle"></i></span>';
-
-				html += `
-
-				<div class="accordion-item mb-2 shadow-sm border rounded" id="q${index}">
-
-					<h2 class="accordion-header">
-
-						<button class="accordion-button collapsed fw-semibold"
-							type="button"
-							data-bs-toggle="collapse"
-							data-bs-target="#collapse${index}">
-
-							Q${q.question_order} ${statusBadge}
-
+					palette += `
+						<button class="palette-btn ${color}" 
+							onclick="scrollToQuestion(${index}, this)">
+							${q.question_order}
 						</button>
-
-					</h2>
-
-					<div id="collapse${index}" class="accordion-collapse collapse">
-
-						<div class="accordion-body">
-
-							<p class="mb-3 fw-bold">${q.question_text}</p>
-
-				`;
-
-				q.options.forEach(function(op){
-
-					let className = "option-default";
-
-					let isSelected = q.user_selected.includes(parseInt(op.id));
-
-					if(parseInt(op.is_correct) === 1){
-						className = "option-default option-correct";
-					}
-
-					if(isSelected && parseInt(op.is_correct) === 0){
-						className = "option-default option-wrong";
-					}
-
-					html += `
-
-						<div class="${className}">
-
-							${op.option_text}
-
-							${isSelected 
-								? '<i class="mdi mdi-account-check text-primary ms-2" title="Your Answer"></i>' 
-								: ''}
-
-							${parseInt(op.is_correct) === 1 
-								? '<i class="mdi mdi-check text-success ms-2" title="Correct Answer"></i>' 
-								: ''}
-
-							${isSelected && parseInt(op.is_correct) === 0
-								? '<i class="mdi mdi-close text-danger ms-2" title="Wrong Answer"></i>'
-								: ''}
-
-						</div>
 					`;
 
 				});
 
-				html += `</div></div></div>`;
+				$("#questionPalette").html(palette);
 
-			});
+				/* QUESTIONS */
 
-			$("#questionReview").html(html);
+				let html = "";
 
-		}, "json");
+				res.questions.forEach(function(q, index){
+
+					let statusBadge = "";
+
+					if(q.status === "correct")
+						statusBadge = '<span class="ms-2 text-success"><i class="mdi mdi-check-circle"></i></span>';
+
+					else if(q.status === "wrong")
+						statusBadge = '<span class="ms-2 text-danger"><i class="mdi mdi-close-circle"></i></span>';
+
+					else
+						statusBadge = '<span class="ms-2 text-secondary"><i class="mdi mdi-skip-next-circle"></i></span>';
+
+					html += `
+
+					<div class="accordion-item mb-2 shadow-sm border rounded" id="q${index}">
+
+						<h2 class="accordion-header">
+
+							<button class="accordion-button collapsed fw-semibold"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#collapse${index}">
+
+								Q${q.question_order} ${statusBadge}
+
+							</button>
+
+						</h2>
+
+						<div id="collapse${index}" class="accordion-collapse collapse">
+
+							<div class="accordion-body">
+
+								<p class="mb-3 fw-bold">${q.question_text}</p>
+
+					`;
+
+					q.options.forEach(function(op){
+
+						let className = "option-default";
+
+						let isSelected = q.user_selected.includes(parseInt(op.id));
+
+						if(parseInt(op.is_correct) === 1){
+							className = "option-default option-correct";
+						}
+
+						if(isSelected && parseInt(op.is_correct) === 0){
+							className = "option-default option-wrong";
+						}
+
+						html += `
+
+							<div class="${className}">
+
+								${op.option_text}
+
+								${isSelected 
+									? '<i class="mdi mdi-account-check text-primary ms-2"></i>' 
+									: ''}
+
+								${parseInt(op.is_correct) === 1 
+									? '<i class="mdi mdi-check text-success ms-2"></i>' 
+									: ''}
+
+								${isSelected && parseInt(op.is_correct) === 0
+									? '<i class="mdi mdi-close text-danger ms-2"></i>'
+									: ''}
+
+							</div>
+						`;
+
+					});
+
+					html += `</div></div></div>`;
+
+				});
+
+				$("#questionReview").html(html);
+
+			},
+
+			error: function(xhr){
+				console.log(xhr.responseText);
+				alert("Server error while loading result");
+			}
+
+		});
 
 	}
-
 
 	/* SCROLL */
 

@@ -68,59 +68,73 @@
 
 	function loadAttempts(){
 
-		$.get(api_url + "quiz/getattempts.php", function(res){
+		$.ajax({
+			url: api_url + "quiz/getattempts.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({}),
+			dataType: "json",
 
-			if(res.status != "success"){
-				alert("Failed to load attempts");
-				return;
-			}
+			success: function(res){
 
-			let html = "";
-
-			res.data.forEach(function(a){
-
-				let statusBadge = "";
-
-				if(a.status == "completed"){
-					statusBadge = '<span class="badge bg-success">Completed</span>';
-				}else{
-					statusBadge = '<span class="badge bg-warning">In Progress</span>';
+				if(res.status != "success"){
+					alert("Failed to load attempts");
+					return;
 				}
 
-				html += `
+				let html = "";
 
-				<tr>
+				res.data.forEach(function(a){
 
-					<td>${a.quiz_name}</td>
+					let statusBadge = "";
 
-					<td>${a.completed_at ?? "-"}</td>
+					if(a.status == "completed"){
+						statusBadge = '<span class="badge bg-success">Completed</span>';
+					}else{
+						statusBadge = '<span class="badge bg-warning">In Progress</span>';
+					}
 
-					<td>${a.score ?? 0} / ${a.total_questions ?? 0}</td>
+					html += `
 
-					<td>${statusBadge}</td>
+					<tr>
 
-					<td class="text-center action-icons">
+						<td>${a.quiz_name}</td>
 
-						<a href="result.php?attempt_id=${a.attempt_id}" title="View Result">
-							<i class="mdi mdi-eye text-info"></i>
-						</a>
+						<td>${a.completed_at ?? "-"}</td>
 
-					</td>
+						<td>${a.score ?? 0} / ${a.total_questions ?? 0}</td>
 
-				</tr>
+						<td>${statusBadge}</td>
 
-				`;
+						<td class="text-center action-icons">
 
-			});
+							<a href="result.php?attempt_id=${a.attempt_id}" title="View Result">
+								<i class="mdi mdi-eye text-info"></i>
+							</a>
 
-			$("#attemptBody").html(html);
+						</td>
 
-			$('#attemptTable').DataTable({
-				pageLength: 10,
-				lengthChange: false
-			});
+					</tr>
 
-		}, "json");
+					`;
+
+				});
+
+				$("#attemptBody").html(html);
+
+				$('#attemptTable').DataTable({
+					pageLength: 10,
+					lengthChange: false,
+					destroy: true
+				});
+
+			},
+
+			error: function(){
+				alert("Server error while loading attempts");
+			}
+
+		});
 
 	}
 

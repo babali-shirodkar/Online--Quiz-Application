@@ -86,27 +86,34 @@
 
 	function loadCategories(){
 
-		$.get(api_url + "category/getcategories.php", function(res){
+		$.ajax({
+			url: api_url + "category/getcategories.php",
+			type: "GET",
+			dataType: "json",
+			success: function(res){
 
-			if(res.status == "success"){
+				if(res.status == "success"){
 
-				let html = '<button class="category-chip active" data-category="all">All</button>';
+					let html = '<button class="category-chip active" data-category="all">All</button>';
 
-				res.data.forEach(function(cat){
+					res.data.forEach(function(cat){
 
-					html += `
-						<button class="category-chip" data-category="${cat.id}">
-							${cat.category_name}
-						</button>
-					`;
+						html += `
+							<button class="category-chip" data-category="${cat.id}">
+								${cat.category_name}
+							</button>
+						`;
 
-				});
+					});
 
-				$("#categoryContainer").html(html);
+					$("#categoryContainer").html(html);
 
+				}
+			},
+			error: function(){
+				alert("Failed to load categories");
 			}
-
-		}, "json");
+		});
 
 	}
 
@@ -115,16 +122,23 @@
 
 	function loadQuizzes(){
 
-		$.get(api_url + "quiz/getpublishedquizzes.php", function(res){
+		$.ajax({
+			url: api_url + "quiz/getpublishedquizzes.php",
+			type: "GET",
+			dataType: "json",
+			success: function(res){
 
-			if(res.status == "success"){
+				if(res.status == "success"){
 
-				allQuizzes = res.data;
-				renderQuizzes(allQuizzes);
+					allQuizzes = res.data;
+					renderQuizzes(allQuizzes);
 
+				}
+			},
+			error: function(){
+				alert("Failed to load quizzes");
 			}
-
-		}, "json");
+		});
 
 	}
 

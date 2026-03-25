@@ -37,9 +37,12 @@ $stmt->bind_param(
 
 if($stmt->execute()){
 
+    $quiz_id = $conn->insert_id; 
+
     echo json_encode([
         "status"=>"success",
-        "message"=>"Quiz created successfully"
+        "message"=>"Quiz created successfully",
+        "quiz_id"=>$quiz_id  
     ]);
 
 }else{
@@ -50,4 +53,5 @@ if($stmt->execute()){
     ]);
 
 }
+
 ?>

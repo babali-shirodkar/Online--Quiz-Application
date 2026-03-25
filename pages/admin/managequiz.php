@@ -125,115 +125,102 @@
 
 	function loadQuizzes(){
 
-		$.get(api_url + "quiz/getallquiz.php", function(res){
+		$.ajax({
+			url: api_url + "quiz/getallquiz.php",
+			type: "GET",
+			contentType: "application/json",
+			data: JSON.stringify({}),
+			dataType: "json",
 
-			if(res.status != "success") return;
+			success: function(res){
 
-			loadInstructorFilter(res.data);
+				if(res.status != "success") return;
 
-			let html = "";
+				loadInstructorFilter(res.data);
 
-			res.data.forEach(function(q){
+				let html = "";
 
-				let statusBadge = "";
+				res.data.forEach(function(q){
 
-				if(q.status == "published"){
-					statusBadge = '<span class="badge bg-success">Published</span>';
-				}
-				else if(q.status == "deleted"){
-					statusBadge = '<span class="badge bg-danger">Deleted</span>';
-				}
-				else{
-					statusBadge = '<span class="badge bg-warning">Draft</span>';
-				}
+					let statusBadge = "";
 
-				/* ACTION BUTTONS */
+					if(q.status == "published"){
+						statusBadge = '<span class="badge bg-success">Published</span>';
+					}
+					else{
+						statusBadge = '<span class="badge bg-warning">Draft</span>';
+					}
 
-				let actionBtns = "";
+					let actionBtns = "";
 
-				if(q.status === "draft"){
+					if(q.status === "draft"){
 
-					actionBtns = `
-						<a href="editquiz.php?quiz_id=${q.quiz_id}" title="Edit">
-							<i class="mdi mdi-pencil text-primary"></i>
-						</a>
+						actionBtns = `
+							<a href="editquiz.php?quiz_id=${q.quiz_id}" title="Edit">
+								<i class="mdi mdi-pencil text-primary"></i>
+							</a>
 
-						<a href="#" onclick="publishQuiz(${q.quiz_id})" title="Publish">
-							<i class="mdi mdi-upload text-success"></i>
-						</a>
+							<a href="#" onclick="publishQuiz(${q.quiz_id})" title="Publish">
+								<i class="mdi mdi-upload text-success"></i>
+							</a>
 
-						<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
-							<i class="mdi mdi-delete text-danger"></i>
-						</a>
-					`;
+							<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
+								<i class="mdi mdi-delete text-danger"></i>
+							</a>
+						`;
 
-				}
-				else if(q.status === "published"){
+					}
+					else if(q.status === "published"){
 
-					actionBtns = `
-						<a href="#" onclick="unpublishQuiz(${q.quiz_id})" title="Unpublish">
-							<i class="mdi mdi-download text-warning"></i>
-						</a>
+						actionBtns = `
+							<a href="#" onclick="unpublishQuiz(${q.quiz_id})" title="Unpublish">
+								<i class="mdi mdi-download text-warning"></i>
+							</a>
 
-						<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
-							<i class="mdi mdi-delete text-danger"></i>
-						</a>
-					`;
+							<a href="#" onclick="deleteQuiz(${q.quiz_id})" title="Delete">
+								<i class="mdi mdi-delete text-danger"></i>
+							</a>
+						`;
 
-				}
-				else{
-					actionBtns = `<span class="text-muted small">No actions</span>`;
-				}
+					}
+					else{
+						actionBtns = `<span class="text-muted small">No actions</span>`;
+					}
 
-				/* ROW */
+					let createdByColumn = "";
 
-				let createdByColumn = "";
+					if(user_role === "admin"){
+						createdByColumn = `<td>${q.instructor_name ?? '-'}</td>`;
+					}
 
-				if(user_role === "admin"){
-					createdByColumn = `<td>${q.instructor_name ?? '-'}</td>`;
-				}
+					html += `
+					<tr data-category="${q.category}" data-instructor="${q.created_by}">
+						<td>${q.title}</td>
+						${createdByColumn}
+						<td>${q.category}</td>
+						<td>${q.duration} min</td>
+						<td>${q.total_questions}</td>
+						<td>${q.total_marks}</td>
+						<td>${statusBadge}</td>
+						<td class="text-center">${actionBtns}</td>
+					</tr>`;
+				});
 
-				html += `
+				$("#quizBody").html(html);
 
-				<tr 
-					data-category="${q.category}" 
-					data-instructor="${q.created_by}">
+				$('#quizTable').DataTable({
+					pageLength: 5,
+					lengthChange: false,
+					destroy: true,
+					paging: true,
+					searching: false,
+					info: true,
+					ordering: true,
+					dom: 'tip'
+				});
 
-					<td>${q.title}</td>
-					${createdByColumn}
-
-					<td>${q.category}</td>
-					<td>${q.duration} min</td>
-					<td>${q.total_questions}</td>
-					<td>${q.total_marks}</td>
-					<td>${statusBadge}</td>
-
-					<td class="text-center">
-						${actionBtns}
-					</td>
-
-				</tr>
-
-				`;
-
-			});
-
-			$("#quizBody").html(html);
-
-			/* DATATABLE */
-
-			$('#quizTable').DataTable({
-				pageLength: 5,
-				lengthChange: false,
-				destroy: true,
-				paging: true,
-				searching: false,
-				info: true,
-				ordering: true,
-				dom: 'tip'
-			});
-
-		}, "json");
+			}
+		});
 
 	}
 
@@ -241,19 +228,28 @@
 
 	function loadCategories(){
 
-		$.get(api_url + "category/getcategories.php", function(res){
+		$.ajax({
+			url: api_url + "category/getcategories.php",
+			type: "GET",
+			contentType: "application/json",
+			data: JSON.stringify({}),
+			dataType: "json",
 
-			if(res.status != "success") return;
+			success: function(res){
 
-			let html = '<option value="">All Categories</option>';
+				if(res.status != "success") return;
 
-			res.data.forEach(function(cat){
-				html += `<option value="${cat.category_name}">${cat.category_name}</option>`;
-			});
+				let html = '<option value="">All Categories</option>';
 
-			$("#categoryFilter").html(html);
+				res.data.forEach(function(cat){
+					html += `<option value="${cat.category_name}">${cat.category_name}</option>`;
+				});
 
-		}, "json");
+				$("#categoryFilter").html(html);
+
+			}
+
+		});
 
 	}
 
@@ -328,69 +324,87 @@
 
 	function publishQuiz(id){
 
-    if(!confirm("Publish this quiz?")) return;
+		if(!confirm("Publish this quiz?")) return;
 
-    $.ajax({
-        url: api_url + "quiz/publishquiz.php",
-        type: "POST",
-        contentType: "application/json",
-        dataType: "json",   
-        data: JSON.stringify({ quiz_id: id }),
+		$.ajax({
+			url: api_url + "quiz/publishquiz.php",
+			type: "POST",
+			contentType: "application/json",
+			dataType: "json",   
+			data: JSON.stringify({ quiz_id: id }),
 
-        success: function(res){
+			success: function(res){
 
-            console.log(res); 
+				console.log(res); 
 
-            if(res.status === "success"){
-                alert("Quiz published successfully");
-                location.reload();
-            } else {
-                alert(res.message || "Something went wrong");
-            }
-        },
+				if(res.status === "success"){
+					alert("Quiz published successfully");
+					location.reload();
+				} else {
+					alert(res.message || "Something went wrong");
+				}
+			},
 
-        error: function(xhr){
-            console.log(xhr.responseText);
-            alert("Server error");
-        }
-    });
+			error: function(xhr){
+				console.log(xhr.responseText);
+				alert("Server error");
+			}
+		});
 
-}
+	}
 
 	/* Un publish Quiz */
 
 	function unpublishQuiz(id){
 
-    if(!confirm("Unpublish this quiz? It will move to draft.")) return;
+		if(!confirm("Unpublish this quiz? It will move to draft.")) return;
 
-    $.post(api_url + "quiz/unpublishquiz.php", {quiz_id: id}, function(res){
+		$.ajax({
+			url: api_url + "quiz/unpublishquiz.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ quiz_id: id }),
+			dataType: "json",
 
-        if(res.status == "success"){
-            alert("Quiz moved to draft successfully");
-            location.reload();
-        }else{
-            alert(res.message || "Something went wrong");
-        }
+			success: function(res){
 
-    }, "json");
+				if(res.status == "success"){
+					alert("Quiz moved to draft successfully");
+					location.reload();
+				}else{
+					alert(res.message || "Something went wrong");
+				}
 
-}
+			}
+
+		});
+
+	}
 
 
 	function deleteQuiz(id){
 
 		if(!confirm("Delete this quiz?")) return;
 
-		$.post(api_url + "quiz/deletequiz.php", {quiz_id: id}, function(res){
+		$.ajax({
+			url: api_url + "quiz/deletequiz.php",
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify({ quiz_id: id }),
+			dataType: "json",
 
-			if(res.status == "success"){
-				alert("Quiz deleted successfully");
-				location.reload();
-			}else{
-				alert(res.message);
+			success: function(res){
+
+				if(res.status == "success"){
+					alert("Quiz deleted successfully");
+					location.reload();
+				}else{
+					alert(res.message);
+				}
+
 			}
 
-		}, "json");
+		});
 
 	}
 

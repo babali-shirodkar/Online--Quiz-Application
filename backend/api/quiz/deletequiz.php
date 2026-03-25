@@ -7,7 +7,9 @@ include "../../../userAccess.php";
 
 try{
 
-    $quiz_id = $_POST['quiz_id'] ?? '';
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    $quiz_id = $data['quiz_id'] ?? '';
 
     if(!$quiz_id){
         throw new Exception("Quiz ID missing");
@@ -17,12 +19,10 @@ try{
         throw new Exception("Unauthorized access");
     }
 
-  
-
     $stmt = $conn->prepare("
-    UPDATE quizzes 
-    SET status='deleted' 
-    WHERE quiz_id=?
+        UPDATE quizzes 
+        SET status='deleted' 
+        WHERE quiz_id=?
     ");
 
     $stmt->bind_param("i",$quiz_id);

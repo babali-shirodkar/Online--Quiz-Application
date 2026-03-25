@@ -13,7 +13,7 @@ if(!isset($user_id)){
     exit;
 }
 
-/* ================= GET ATTEMPTS ================= */
+/* GET ATTEMPTS */
 
 $sql = $conn->prepare("
 SELECT 
