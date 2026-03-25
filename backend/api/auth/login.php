@@ -35,7 +35,7 @@ if (!$user || !password_verify($password, $user['password'])) {
     exit;
 }
 
-if ($user['status'] !== 'active') {
+if ($user['status'] !== 1) {
     echo json_encode([
         "status" => "error",
         "message" => "Your account is inactive. Please contact admin."
@@ -60,14 +60,19 @@ $_SESSION['email'] = $user['email'];
 
 unset($user['password']);
 
+$redirect = "/quiz/pages/admin/index.php";
+
+if(isset($_SESSION['redirect_after_login'])){
+    $redirect = $_SESSION['redirect_after_login'];
+    unset($_SESSION['redirect_after_login']); // important
+}
+
 echo json_encode([
     "status" => "success",
     "message" => "Login successful",
-    "data" => [
-        "user_details" => $user
-    ],
-    "redirect" => "/quiz/pages/admin/index.php"
+    "redirect" => $redirect
 ]);
 
 exit;
+
 ?>

@@ -15,9 +15,9 @@ try{
     /* FETCH INSTRUCTORS */
 
     $stmt = $conn->prepare("
-        SELECT user_id, name, email, status, is_deleted 
+        SELECT user_id, name, email, status
         FROM users 
-        WHERE role = 'instructor' AND is_deleted= 0
+        WHERE role = 'instructor' AND status = 1
         ORDER BY user_id DESC
     ");
 

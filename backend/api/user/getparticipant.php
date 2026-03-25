@@ -15,9 +15,9 @@ try{
     /* FETCH PARTICIPANTS */
 
     $stmt = $conn->prepare("
-        SELECT user_id, name, email, status, is_deleted
+        SELECT user_id, name, email, status
         FROM users 
-        WHERE role = 'participant' AND is_deleted = 0
+        WHERE role = 'participant' AND status = 1
         ORDER BY user_id DESC
     ");
 

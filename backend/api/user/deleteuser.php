@@ -40,7 +40,7 @@ try{
 
    $stmt = $conn->prepare("
         UPDATE users 
-        SET is_deleted = 1 
+        SET status = 0
         WHERE user_id=?
     ");
 

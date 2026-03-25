@@ -43,7 +43,7 @@ require 'PHPMailer/src/Exception.php';
 
 <div id="main-wrapper">
 
-    <!-- ================= HEADER ================= -->
+    <!--  HEADER  -->
     <header class="py-3 bg-white shadow-sm fixed-top">
         <div class="container">
             <nav class="navbar navbar-expand-md navbar-light px-0">
@@ -61,6 +61,7 @@ require 'PHPMailer/src/Exception.php';
                         <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
                         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#explore">Explore Quizzes</a></li>
                         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                         <li class="nav-item ms-3">
                             <a href="login.php" class="btn btn-theme">Login</a>
@@ -210,6 +211,45 @@ require 'PHPMailer/src/Exception.php';
         </div>
     </section>
 
+<!-- Explore Quizzez -->
+
+    <section id="explore" class="spacer">
+    <div class="container">
+
+        <div class="row mb-4">
+            <div class="col-md-12 text-center">
+                <h2 class="font-weight-bold">Explore Quizzes</h2>
+                <p class="text-muted">Try available quizzes</p>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!-- LEFT: CATEGORY -->
+            <div class="col-md-3">
+
+                <h5 class="mb-3">Categories</h5>
+
+                <div id="homeCategoryContainer" class="list-group">
+                    <button class="list-group-item active" data-category="all">
+                        All
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: QUIZZES -->
+            <div class="col-md-9">
+
+                <div class="row" id="homeQuizContainer"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+ 
 
     <section id="contact" class="spacer">
         <div class="container">
@@ -348,6 +388,146 @@ require 'PHPMailer/src/Exception.php';
 
             }, "json");
         });
+
+
+
+        let api_url = "<?php echo $api_url ?? 'backend/api/'; ?>";
+
+            let homeQuizzes = [];
+
+            /* LOAD ON PAGE */
+            $(document).ready(function(){
+                loadHomeCategories();
+                loadHomeQuizzes();
+            });
+
+
+            /* LOAD CATEGORIES */
+            function loadHomeCategories(){
+
+                $.ajax({
+                    url: api_url + "category/getcategories.php",
+                    type: "GET",
+                    dataType: "json",
+
+                    success: function(res){
+
+                        if(res.status === "success"){
+
+                            let html = `
+                                <button class="list-group-item active" data-category="all">
+                                    All
+                                </button>
+                            `;
+
+                            res.data.forEach(function(cat){
+                                html += `
+                                    <button class="list-group-item" data-category="${cat.id}">
+                                        ${cat.category_name}
+                                    </button>
+                                `;
+                            });
+
+                            $("#homeCategoryContainer").html(html);
+                        }
+                    }
+                });
+            }
+
+
+            /* LOAD QUIZZES */
+            function loadHomeQuizzes(){
+
+                $.ajax({
+                    url: api_url + "quiz/getpublishedquizzes.php",
+                    type: "GET",
+                    dataType: "json",
+
+                    success: function(res){
+
+                        if(res.status === "success"){
+                            homeQuizzes = res.data;
+                            renderHomeQuizzes(homeQuizzes);
+                        }
+                    }
+                });
+            }
+
+
+            /* RENDER QUIZZES */
+            function renderHomeQuizzes(data){
+
+                let html = "";
+
+                if(data.length === 0){
+                    html = `<p class="text-center">No quizzes available</p>`;
+                }
+                else{
+
+                    data.forEach(function(q){
+
+                        html += `
+                            <div class="col-md-6 col-lg-4 mb-4">
+
+                                <div class="card shadow-sm h-100">
+
+                                    <div class="card-body">
+
+                                        <h5 class="mb-2">${q.title}</h5>
+
+                                        <div class="mb-2 text-muted small">
+                                            <i class="mdi mdi-help-circle-outline text-primary"></i> ${q.total_questions} Questions
+                                        </div>
+
+                                        <div class="mb-2 text-muted small">
+                                            <i class="mdi mdi-clock-outline text-warning"></i> ${q.duration} Min
+                                        </div>
+
+                                        <div class="mb-2 text-muted small">
+                                            <i class="mdi mdi-star-outline text-success"></i> ${q.total_marks} Marks
+                                        </div>
+
+                                       
+                                        <span class="badge bg-light text-dark small">
+                                            <i class="mdi mdi-tag-outline"></i> ${q.category_name ?? ''}
+                                        </span>
+
+                                        <div class="text-end">
+                                            <a href="login.php" class="btn btn-theme btn-sm">
+                                                Start
+                                            </a>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    });
+                }
+
+                $("#homeQuizContainer").html(html);
+            }
+
+
+            /* CATEGORY FILTER */
+            $(document).on("click", "#homeCategoryContainer button", function(){
+
+                $("#homeCategoryContainer button").removeClass("active");
+                $(this).addClass("active");
+
+                let cat = $(this).data("category");
+
+                if(cat === "all"){
+                    renderHomeQuizzes(homeQuizzes);
+                }
+                else{
+                    let filtered = homeQuizzes.filter(q => q.category_id == cat);
+                    renderHomeQuizzes(filtered);
+                }
+
+            });
     });
 
 </script>
