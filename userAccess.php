@@ -2,7 +2,10 @@
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: logout.php");
+
+    $current_url = $_SERVER['REQUEST_URI'];
+
+    header("Location: /quiz/login.php?redirect_url=" . urlencode($current_url));
     exit;
 }
 

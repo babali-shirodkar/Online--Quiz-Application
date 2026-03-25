@@ -62,13 +62,13 @@ try{
         $q1 = $conn->query("
             SELECT COUNT(*) as total_instructors 
             FROM users 
-            WHERE role='instructor' AND status='active'
+            WHERE role='instructor' AND status= 1
         ")->fetch_assoc();
 
         $q2 = $conn->query("
             SELECT COUNT(*) as total_participants 
             FROM users 
-            WHERE role='participant' AND is_deleted=0
+            WHERE role='participant' AND status= 1
         ")->fetch_assoc();
 
         $q3 = $conn->query("

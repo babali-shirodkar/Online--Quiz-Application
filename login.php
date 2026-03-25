@@ -1,4 +1,14 @@
-<?php include "backend/confi/database.php" ?>
+<?php
+session_start();
+
+include "backend/confi/database.php";
+
+if(isset($_GET['redirect']) && $_GET['redirect'] == "startquiz" && isset($_GET['quiz_id'])){
+    $quiz_id = intval($_GET['quiz_id']);
+    $_SESSION['redirect_after_login'] = "startquiz.php?quiz_id=" . $quiz_id;
+}
+?>
+
 
 <!DOCTYPE html>
 <html dir="ltr">
@@ -167,7 +177,7 @@
 
                         setTimeout(function() {
 
-                            window.location.href = "pages/admin/index.php";
+                          window.location.href = response.redirect;
 
                         }, 800);
 

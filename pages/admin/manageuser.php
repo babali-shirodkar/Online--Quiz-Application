@@ -151,7 +151,7 @@
 
 				res.data.forEach(function(u){
 
-					let statusBadge = (u.status == "active") 
+					let statusBadge = (u.status == 1) 
 						? '<span class="badge bg-success">Active</span>'
 						: '<span class="badge bg-secondary">Inactive</span>';
 
@@ -167,10 +167,6 @@
 
 							<a href="#" onclick="editParticipant(${u.user_id},'${u.name}','${u.email}')" title="Edit">
 								<i class="mdi mdi-pencil text-primary"></i>
-							</a>
-
-							<a href="#" onclick="toggleStatus(${u.user_id})" title="Activate / Deactivate">
-								<i class="mdi mdi-account-off text-warning"></i>
 							</a>
 
 							<a href="#" onclick="deleteParticipant(${u.user_id})" title="Delete">
