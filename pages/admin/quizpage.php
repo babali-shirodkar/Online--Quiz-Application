@@ -52,8 +52,8 @@
 									Mark for Review & Next
 								</button>
 
-								<button class="btn btn-secondary btn-sm" id="clearResponseBtn">
-									Clear Response
+								<button class="btn btn-secondary btn-sm" id="prevBtn">
+									Previous
 								</button>
 
 							</div>
@@ -278,8 +278,13 @@
 
 			let cls = "notanswered";
 
-			if(answers[q.id]) cls = "answered";
-			if(reviewQuestions.includes(q.id)) cls = "review";
+			if(reviewQuestions.includes(q.id)){
+				cls = "review";
+			}else if(answers[q.id]){
+				cls = "answered";
+			}else{
+				cls = "notanswered";
+			}
 
 			html += `<div class="qbox ${cls}" onclick="jumpQuestion(${i})">${i+1}</div>`;
 
@@ -350,6 +355,27 @@
 
 		updatePalette();
 
+		let isLast = currentIndex === questions.length - 1;
+
+		if(isLast){
+			$("#saveNextBtn")
+				.text("Submit Test")
+				.removeClass("btn-success")
+				.addClass("btn-primary");
+
+			$("#clearResponseBtn").hide();
+			$("#prevBtn").show();
+
+		}else{
+			$("#saveNextBtn")
+				.text("Save & Next")
+				.removeClass("btn-primary")
+				.addClass("btn-success");
+
+			$("#clearResponseBtn").hide();
+			$("#prevBtn").show();
+		}
+
 	}
 
 
@@ -393,8 +419,11 @@
 				})
 			});
 
+			let qid = questions[currentIndex].id;
+			reviewQuestions = reviewQuestions.filter(id => id != qid);
+
 			$(".qbox").eq(currentIndex)
-				.removeClass("notanswered")
+				.removeClass("notanswered review")
 				.addClass("answered");
 
 		}
@@ -455,23 +484,45 @@
 	});
 
 
-	/* SAVE NEXT */
+	/* PREVIOUS BUUTON */
+	$("#prevBtn").click(function(){
 
-	$("#saveNextBtn").click(function(){
+		saveAnswer(); // optional (recommended)
 
-		saveAnswer();
-
-		if(currentIndex < questions.length - 1){
-			currentIndex++;
+		if(currentIndex > 0){
+			currentIndex--;
 			loadQuestion();
 		}
 
 	});
 
+	/* SAVE NEXT */
+
+	$("#saveNextBtn").click(function(){
+
+		let isLast = currentIndex === questions.length - 1;
+
+		saveAnswer();
+
+		if(isLast){
+			
+			$("#submitQuizBtn").click();
+			return;
+		}
+
+		currentIndex++;
+		loadQuestion();
+
+	});
 
 	function jumpQuestion(i){
+
+		saveAnswer();
+
 		currentIndex = i;
 		loadQuestion();
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+
 	}
 
 

@@ -16,7 +16,7 @@ try{
         throw new Exception("Attempt ID missing");
     }
 
-    /* ================= GET QUIZ DETAILS ================= */
+    /*  GET QUIZ DETAILS  */
 
     $qz = $conn->prepare("
         SELECT q.title, q.duration

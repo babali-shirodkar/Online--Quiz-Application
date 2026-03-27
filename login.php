@@ -5,7 +5,7 @@ include "backend/confi/database.php";
 
 if(isset($_GET['redirect']) && $_GET['redirect'] == "startquiz" && isset($_GET['quiz_id'])){
     $quiz_id = intval($_GET['quiz_id']);
-    $_SESSION['redirect_after_login'] = "startquiz.php?quiz_id=" . $quiz_id;
+    $_SESSION['redirect_after_login'] = "pages/admin/startquiz.php?quiz_id=".$quiz_id;
 }
 ?>
 

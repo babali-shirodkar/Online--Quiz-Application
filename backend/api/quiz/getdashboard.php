@@ -47,7 +47,7 @@ try{
                 SUM(status='draft') as draft,
                 SUM(status='published') as published
             FROM quizzes
-            WHERE created_by=?
+            WHERE created_by=? AND status
         ");
         $q->bind_param("i",$user_id);
         $q->execute();

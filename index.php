@@ -493,7 +493,7 @@ require 'PHPMailer/src/Exception.php';
                                         </span>
 
                                         <div class="text-end">
-                                            <a href="login.php" class="btn btn-theme btn-sm">
+                                            <a href="login.php?redirect=startquiz&quiz_id=${q.quiz_id}" class="btn btn-theme btn-sm">
                                                 Start
                                             </a>
                                         </div>

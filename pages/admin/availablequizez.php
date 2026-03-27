@@ -197,9 +197,10 @@
 										<i class="mdi mdi-tag-outline"></i> ${q.category_name ?? ''}
 									</span>
 
-									<a href="login.php?redirect=pages/admin/startquiz&quiz_id=${q.quiz_id}" class="btn btn-primary btn-sm">
+									<a href="startquiz.php?quiz_id=${q.quiz_id}" class="btn btn-primary btn-sm">
 										Start
 									</a>
+									
 
 								</div>
 

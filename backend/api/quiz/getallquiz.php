@@ -53,7 +53,7 @@ try{
         LEFT JOIN categories c ON c.id = q.category_id
         LEFT JOIN users u ON u.user_id = q.created_by
         WHERE q.created_by = ?
-        WHERE q.status != 'deleted' 
+        AND q.status != 'deleted' 
         ORDER BY q.quiz_id DESC";
 
         $stmt = $conn->prepare($sql);
